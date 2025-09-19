@@ -1,45 +1,52 @@
-{%- doc -%}
-  Intended for use in a block similar to the button block.
+{%- comment -%}
+  Uso dentro de una SECTION:
+  {% render 'button', link: block.settings.link, block: block %}
+{%- endcomment -%}
 
-  @param {string} link - link to render
-  @param {object} [block] - The block
+{% assign block_settings = block.settings | default: nil %}
 
-  @example
-  {% render 'button', link: '/collections/all' %}
-{%- enddoc -%}
+{% assign icon_url = 'https://cdn.shopify.com/s/files/1/0922/7858/7767/files/Vector_28.svg?v=1758269263' %}
+{% assign icon_url_hover = 'https://cdn.shopify.com/s/files/1/0922/7858/7767/files/Vector_28.svg?v=1758269263' %}
 
-{% assign block_settings = block.settings %}
+{%- assign show_icon = false -%}
+{%- assign bold_text = false -%}
+{%- if block_settings != nil -%}
+  {%- assign show_icon = block_settings.show_icon | default: false -%}
+  {%- assign bold_text = block_settings.bold_text | default: false -%}
+{%- endif -%}
 
 <a
-  {% if link == blank %}
-    role="link"
-    aria-disabled="true"
-  {% else %}
-    href="{{ link }}"
-  {% endif %}
+  {% if link == blank %}role="link" aria-disabled="true"{% else %}href="{{ link }}"{% endif %}
   class="
     size-style
     {{ block_settings.style_class }}
     {{ block_settings.style_class }}--{{ block.id }}
+    {% if show_icon %}has-icon{% endif %}
+    {% if bold_text %}is-bold{% endif %}
   "
-  style="{% render 'size-style', settings: block_settings %}"
-  {%- if block_settings.open_in_new_tab -%}
-    target="_blank"
-    rel="noopener noreferrer"
-  {%- endif -%}
+  style="
+    {% if block_settings %}{% render 'size-style', settings: block_settings %}{% endif %}
+    {% if show_icon %}--icon-url: url('{{ icon_url }}'); --icon-url-hover: url('{{ icon_url_hover }}');{% endif %}
+  "
+  {% if block_settings and block_settings.open_in_new_tab %}target="_blank" rel="noopener noreferrer"{% endif %}
   {{ block.shopify_attributes }}
 >
-  {{ block_settings.label }}
+  <span class="button__label">{{ block_settings.label }}</span>
+  {% if show_icon %}<span class="button__icon" aria-hidden="true"></span>{% endif %}
 </a>
 
-{% stylesheet %}
-  .link {
-    text-decoration: none;
-    text-decoration-color: currentcolor;
+<style>
+  .link{ text-decoration:none; text-decoration-color:currentcolor; }
+  .link:hover{ color:var(--color-primary-hover); text-decoration-color:transparent; }
 
-    &:hover {
-      color: var(--color-primary-hover);
-      text-decoration-color: transparent;
-    }
+  .is-bold{ font-weight:700; }
+
+  .has-icon{ display:inline-flex; align-items:center; gap:.5rem; }
+  .has-icon .button__icon{
+    display:inline-block; width:1em; height:1em;
+    background-image:var(--icon-url);
+    background-repeat:no-repeat; background-size:contain; background-position:center;
+    flex:0 0 auto;
   }
-{% endstylesheet %}
+  .has-icon:hover .button__icon{ background-image:var(--icon-url-hover); }
+</style>
