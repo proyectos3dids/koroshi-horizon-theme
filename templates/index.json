@@ -817,7 +817,7 @@
         "i2_label": "MUJER",
         "i2_url": "",
         "i2_accent": false,
-        "i2_under": true,
+        "i2_under": false,
         "i2_bold": true,
         "i3_label": "HOMBRE",
         "i3_url": "",
