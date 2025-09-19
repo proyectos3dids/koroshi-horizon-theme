@@ -1,8 +1,8 @@
 {% comment %}
-  CATEGORY STRIP — sin puntos, subrayado al hacer clic.
-  - Por defecto: Item 2 activo y mostrado, el resto ocultos.
-  - Oculto por defecto vía JS (display:none) y al seleccionar se quita el 'display' inline.
-  - Si un ítem tiene "Acento (resaltado)", el subrayado usa el color de acento.
+  CATEGORY STRIP — por defecto: Item 2 activo y visible; resto ocultos.
+  - Ocultación inicial por CSS (en render): escondo todos los targets menos el del Item 2.
+  - En interacción: JS pone display:none a todos y al seleccionado le QUITA la propiedad inline.
+  - Subrayado usa el color de acento si el ítem tiene “Resaltado”.
 {% endcomment %}
 
 {% assign S = section.settings %}
@@ -49,101 +49,90 @@
   }
   #catstrip-{{ section.id }} .link:hover{ color:var(--hover); }
 
-  /* Resaltado por color */
+  /* Color de acento en el texto */
   #catstrip-{{ section.id }} .item[data-accent="true"] .link{
     color:var(--accent); {% if S.accent_bold %}font-weight:700;{% endif %}
   }
 
-  /* Subrayado base (ajuste o activo) */
+  /* Subrayado por ajuste o activo */
   #catstrip-{{ section.id }} .item[data-underline="true"] .link::after,
   #catstrip-{{ section.id }} .item.is-active .link::after{
     content:""; position:absolute; left:0; right:0; bottom:var(--uline-off);
     height:var(--uline-thick); background:var(--uline);
   }
-
-  /* Si el ítem tiene acento, el subrayado usa el color de acento */
+  /* Si tiene acento, el subrayado toma el color de acento */
   #catstrip-{{ section.id }} .item[data-accent="true"].is-active .link::after,
   #catstrip-{{ section.id }} .item[data-accent="true"][data-underline="true"] .link::after{
     background:var(--accent);
   }
 
-  /* Negrita por ítem */
   #catstrip-{{ section.id }} .item[data-strong="true"] .link{ font-weight:700; }
-
-  /* Enfoque accesible */
   #catstrip-{{ section.id }} .link:focus{ outline:2px solid var(--accent); outline-offset:2px; }
+</style>
+
+{%- comment -%}
+  Ocultación inicial en el primer render (sin JS):
+  - Escondo todos los IDs indicados menos el correspondiente al Item 2.
+{%- endcomment -%}
+<style>
+  {% assign ids = "" | split: "," %}
+  {% assign ids = ids | push: S.i1_target_id | push: S.i2_target_id | push: S.i3_target_id | push: S.i4_target_id | push: S.i5_target_id %}
+  {% for id in ids %}
+    {% assign clean = id | strip %}
+    {% if clean != blank and clean != S.i2_target_id %}
+#{{ clean }}{display:none;}
+    {% endif %}
+  {% endfor %}
 </style>
 
 <section id="catstrip-{{ section.id }}" class="category-strip-simple 3didsprime-strip">
   <div class="wrap">
     <nav aria-label="{{ S.aria_label | default: 'Categorías' }}">
       <ul class="list" role="list">
-
         <!-- ITEM 1 -->
-        <li class="item{% if S.default_active == '1' %} is-active{% endif %}"
+        <li class="item"
             data-target="{{ S.i1_target_id | escape }}"
             data-accent="{% if S.i1_accent %}true{% else %}false{% endif %}"
             data-underline="{% if S.i1_under %}true{% else %}false{% endif %}"
             data-strong="{% if S.i1_bold %}true{% else %}false{% endif %}">
-          {% if S.i1_url != blank %}
-            <a class="link" href="{{ S.i1_url }}" aria-label="{{ S.i1_label }}">{{ S.i1_label }}</a>
-          {% else %}
-            <span class="link" role="text" aria-label="{{ S.i1_label }}">{{ S.i1_label }}</span>
-          {% endif %}
+          {% if S.i1_url != blank %}<a class="link" href="{{ S.i1_url }}">{{ S.i1_label }}</a>{% else %}<span class="link">{{ S.i1_label }}</span>{% endif %}
         </li>
 
-        <!-- ITEM 2 -->
-        <li class="item{% if S.default_active == '2' %} is-active{% endif %}"
+        <!-- ITEM 2 (activo por defecto) -->
+        <li class="item is-active"
             data-target="{{ S.i2_target_id | escape }}"
             data-accent="{% if S.i2_accent %}true{% else %}false{% endif %}"
             data-underline="{% if S.i2_under %}true{% else %}false{% endif %}"
             data-strong="{% if S.i2_bold %}true{% else %}false{% endif %}">
-          {% if S.i2_url != blank %}
-            <a class="link" href="{{ S.i2_url }}" aria-label="{{ S.i2_label }}">{{ S.i2_label }}</a>
-          {% else %}
-            <span class="link" role="text" aria-label="{{ S.i2_label }}">{{ S.i2_label }}</span>
-          {% endif %}
+          {% if S.i2_url != blank %}<a class="link" href="{{ S.i2_url }}">{{ S.i2_label }}</a>{% else %}<span class="link">{{ S.i2_label }}</span>{% endif %}
         </li>
 
         <!-- ITEM 3 -->
-        <li class="item{% if S.default_active == '3' %} is-active{% endif %}"
+        <li class="item"
             data-target="{{ S.i3_target_id | escape }}"
             data-accent="{% if S.i3_accent %}true{% else %}false{% endif %}"
             data-underline="{% if S.i3_under %}true{% else %}false{% endif %}"
             data-strong="{% if S.i3_bold %}true{% else %}false{% endif %}">
-          {% if S.i3_url != blank %}
-            <a class="link" href="{{ S.i3_url }}" aria-label="{{ S.i3_label }}">{{ S.i3_label }}</a>
-          {% else %}
-            <span class="link" role="text" aria-label="{{ S.i3_label }}">{{ S.i3_label }}</span>
-          {% endif %}
+          {% if S.i3_url != blank %}<a class="link" href="{{ S.i3_url }}">{{ S.i3_label }}</a>{% else %}<span class="link">{{ S.i3_label }}</span>{% endif %}
         </li>
 
         <!-- ITEM 4 -->
-        <li class="item{% if S.default_active == '4' %} is-active{% endif %}"
+        <li class="item"
             data-target="{{ S.i4_target_id | escape }}"
             data-accent="{% if S.i4_accent %}true{% else %}false{% endif %}"
             data-underline="{% if S.i4_under %}true{% else %}false{% endif %}"
             data-strong="{% if S.i4_bold %}true{% else %}false{% endif %}">
-          {% if S.i4_url != blank %}
-            <a class="link" href="{{ S.i4_url }}" aria-label="{{ S.i4_label }}">{{ S.i4_label }}</a>
-          {% else %}
-            <span class="link" role="text" aria-label="{{ S.i4_label }}">{{ S.i4_label }}</span>
-          {% endif %}
+          {% if S.i4_url != blank %}<a class="link" href="{{ S.i4_url }}">{{ S.i4_label }}</a>{% else %}<span class="link">{{ S.i4_label }}</span>{% endif %}
         </li>
 
         <!-- ITEM 5 -->
-        <li class="item{% if S.default_active == '5' %} is-active{% endif %}"
+        <li class="item"
             data-target="{{ S.i5_target_id | escape }}"
             data-accent="{% if S.i5_accent %}true{% else %}false{% endif %}"
             data-underline="{% if S.i5_under %}true{% else %}false{% endif %}"
             data-strong="{% if S.i5_bold %}true{% else %}false{% endif %}">
-          {% if S.i5_url != blank %}
-            <a class="link" href="{{ S.i5_url }}" aria-label="{{ S.i5_label }}">{{ S.i5_label }}</a>
-          {% else %}
-            <span class="link" role="text" aria-label="{{ S.i5_label }}">{{ S.i5_label }}</span>
-          {% endif %}
+          {% if S.i5_url != blank %}<a class="link" href="{{ S.i5_url }}">{{ S.i5_label }}</a>{% else %}<span class="link">{{ S.i5_label }}</span>{% endif %}
         </li>
-
       </ul>
     </nav>
   </div>
@@ -157,7 +146,6 @@
     var items = root.querySelectorAll('.item');
     var links = root.querySelectorAll('.item .link');
 
-    // IDs de carruseles (sin '#'), ignorando vacíos
     var targets = [
       "{{ S.i1_target_id | escape }}",
       "{{ S.i2_target_id | escape }}",
@@ -176,24 +164,12 @@
       var el = document.getElementById(id);
       if(el){ el.style.removeProperty('display'); }
     }
-    function clearActive(){
-      items.forEach(function(li){ li.classList.remove('is-active'); });
-    }
+    function clearActive(){ items.forEach(function(li){ li.classList.remove('is-active'); }); }
 
-    // Por defecto: ocultar todos y activar el Item 2 (si tiene ID)
-    hideAll();
-    var defaultIndex = 2; // forzamos Item 2 activo por defecto
-    var defaultItem = items[defaultIndex - 1];
-    if(defaultItem){
-      var defId = defaultItem.getAttribute('data-target');
-      if(defId){ showOne(defId); defaultItem.classList.add('is-active'); }
-    }
-
-    // Click: subraya y muestra carrusel objetivo (si existe)
+    // A la interacción
     links.forEach(function(a){
       a.addEventListener('click', function(e){
-        var li = a.closest('.item');
-        if(!li) return;
+        var li = a.closest('.item'); if(!li) return;
         var targetId = li.getAttribute('data-target');
         if(targetId){
           e.preventDefault();
@@ -238,65 +214,44 @@
     { "type": "range", "id": "underline_thickness", "label": "Grosor (px)", "min": 1, "max": 8, "step": 1, "default": 2 },
     { "type": "range", "id": "underline_offset", "label": "Separación inferior (px)", "min": 0, "max": 12, "step": 1, "default": 3 },
 
-    { "type": "header", "content": "Espaciados" },
-    { "type": "range", "id": "padding_y", "label": "Padding vertical (px)", "min": 0, "max": 60, "step": 1, "default": 16 },
-    { "type": "range", "id": "padding_x", "label": "Padding horizontal (px)", "min": 0, "max": 120, "step": 2, "default": 0 },
-    { "type": "range", "id": "margin_top", "label": "Margen superior (px)", "min": 0, "max": 120, "step": 2, "default": 0 },
-    { "type": "range", "id": "margin_bottom", "label": "Margen inferior (px)", "min": 0, "max": 120, "step": 2, "default": 0 },
-
     { "type": "header", "content": "Accesibilidad" },
     { "type": "text", "id": "aria_label", "label": "Etiqueta ARIA del nav", "default": "Categorías" },
 
-    { "type": "header", "content": "Activo por defecto" },
-    { "type": "select", "id": "default_active", "label": "Ítem activo por defecto", "default": "2",
-      "options": [
-        { "value": "1", "label": "Item 1" },
-        { "value": "2", "label": "Item 2" },
-        { "value": "3", "label": "Item 3" },
-        { "value": "4", "label": "Item 4" },
-        { "value": "5", "label": "Item 5" }
-      ]
-    },
+    { "type": "header", "content": "Items" },
+    { "type": "text", "id": "i1_label", "label": "Texto item 1", "default": "NEW IN" },
+    { "type": "url", "id": "i1_url", "label": "Enlace item 1 (opcional)" },
+    { "type": "text", "id": "i1_target_id", "label": "ID carrusel item 1 (sin #)" },
+    { "type": "checkbox", "id": "i1_accent", "label": "Acento item 1", "default": false },
+    { "type": "checkbox", "id": "i1_under", "label": "Subrayado item 1", "default": false },
+    { "type": "checkbox", "id": "i1_bold", "label": "Negrita item 1", "default": false },
 
-    { "type": "header", "content": "Item 1" },
-    { "type": "text", "id": "i1_label", "label": "Texto", "default": "NEW IN" },
-    { "type": "url", "id": "i1_url", "label": "Enlace (opcional)" },
-    { "type": "text", "id": "i1_target_id", "label": "ID del carrusel objetivo (sin #)"},
-    { "type": "checkbox", "id": "i1_accent", "label": "Resaltar con acento", "default": true },
-    { "type": "checkbox", "id": "i1_under", "label": "Subrayado", "default": false },
-    { "type": "checkbox", "id": "i1_bold", "label": "Negrita", "default": false },
+    { "type": "text", "id": "i2_label", "label": "Texto item 2", "default": "MUJER" },
+    { "type": "url", "id": "i2_url", "label": "Enlace item 2 (opcional)" },
+    { "type": "text", "id": "i2_target_id", "label": "ID carrusel item 2 (sin #)"},
+    { "type": "checkbox", "id": "i2_accent", "label": "Acento item 2", "default": false },
+    { "type": "checkbox", "id": "i2_under", "label": "Subrayado item 2", "default": true },
+    { "type": "checkbox", "id": "i2_bold", "label": "Negrita item 2", "default": true },
 
-    { "type": "header", "content": "Item 2" },
-    { "type": "text", "id": "i2_label", "label": "Texto", "default": "MUJER" },
-    { "type": "url", "id": "i2_url", "label": "Enlace (opcional)" },
-    { "type": "text", "id": "i2_target_id", "label": "ID del carrusel objetivo (sin #)"},
-    { "type": "checkbox", "id": "i2_accent", "label": "Resaltar con acento", "default": false },
-    { "type": "checkbox", "id": "i2_under", "label": "Subrayado", "default": true },
-    { "type": "checkbox", "id": "i2_bold", "label": "Negrita", "default": true },
+    { "type": "text", "id": "i3_label", "label": "Texto item 3", "default": "HOMBRE" },
+    { "type": "url", "id": "i3_url", "label": "Enlace item 3 (opcional)" },
+    { "type": "text", "id": "i3_target_id", "label": "ID carrusel item 3 (sin #)"},
+    { "type": "checkbox", "id": "i3_accent", "label": "Acento item 3", "default": false },
+    { "type": "checkbox", "id": "i3_under", "label": "Subrayado item 3", "default": false },
+    { "type": "checkbox", "id": "i3_bold", "label": "Negrita item 3", "default": true },
 
-    { "type": "header", "content": "Item 3" },
-    { "type": "text", "id": "i3_label", "label": "Texto", "default": "HOMBRE" },
-    { "type": "url", "id": "i3_url", "label": "Enlace (opcional)" },
-    { "type": "text", "id": "i3_target_id", "label": "ID del carrusel objetivo (sin #)"},
-    { "type": "checkbox", "id": "i3_accent", "label": "Resaltar con acento", "default": false },
-    { "type": "checkbox", "id": "i3_under", "label": "Subrayado", "default": false },
-    { "type": "checkbox", "id": "i3_bold", "label": "Negrita", "default": true },
+    { "type": "text", "id": "i4_label", "label": "Texto item 4", "default": "KIDS" },
+    { "type": "url", "id": "i4_url", "label": "Enlace item 4 (opcional)" },
+    { "type": "text", "id": "i4_target_id", "label": "ID carrusel item 4 (sin #)"},
+    { "type": "checkbox", "id": "i4_accent", "label": "Acento item 4", "default": false },
+    { "type": "checkbox", "id": "i4_under", "label": "Subrayado item 4", "default": false },
+    { "type": "checkbox", "id": "i4_bold", "label": "Negrita item 4", "default": true },
 
-    { "type": "header", "content": "Item 4" },
-    { "type": "text", "id": "i4_label", "label": "Texto", "default": "KIDS" },
-    { "type": "url", "id": "i4_url", "label": "Enlace (opcional)" },
-    { "type": "text", "id": "i4_target_id", "label": "ID del carrusel objetivo (sin #)" },
-    { "type": "checkbox", "id": "i4_accent", "label": "Resaltar con acento", "default": false },
-    { "type": "checkbox", "id": "i4_under", "label": "Subrayado", "default": false },
-    { "type": "checkbox", "id": "i4_bold", "label": "Negrita", "default": true },
-
-    { "type": "header", "content": "Item 5" },
-    { "type": "text", "id": "i5_label", "label": "Texto", "default": "REBAJAS" },
-    { "type": "url", "id": "i5_url", "label": "Enlace (opcional)" },
-    { "type": "text", "id": "i5_target_id", "label": "ID del carrusel objetivo (sin #)" },
-    { "type": "checkbox", "id": "i5_accent", "label": "Resaltar con acento", "default": false },
-    { "type": "checkbox", "id": "i5_under", "label": "Subrayado", "default": false },
-    { "type": "checkbox", "id": "i5_bold", "label": "Negrita", "default": true }
+    { "type": "text", "id": "i5_label", "label": "Texto item 5", "default": "REBAJAS" },
+    { "type": "url", "id": "i5_url", "label": "Enlace item 5 (opcional)" },
+    { "type": "text", "id": "i5_target_id", "label": "ID carrusel item 5 (sin #)"},
+    { "type": "checkbox", "id": "i5_accent", "label": "Acento item 5", "default": false },
+    { "type": "checkbox", "id": "i5_under", "label": "Subrayado item 5", "default": false },
+    { "type": "checkbox", "id": "i5_bold", "label": "Negrita item 5", "default": true }
   ],
   "presets": [
     { "name": "CATEGORY STRIP", "category": "Texto" }
