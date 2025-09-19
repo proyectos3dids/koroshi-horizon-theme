@@ -1,8 +1,10 @@
 {% comment %}
   Tira categorías (inputs) — sin puntos, subrayado al hacer clic,
   y toggle de carruseles por ID (display none / show).
-  Ahora: todos los IDs indicados quedan ocultos por defecto (CSS),
-  y se muestran según el ítem pulsado o el activo por defecto.
+  Cambios:
+  - Ocultado por defecto con CSS usando !important.
+  - Al cargar: hideAll() SIEMPRE, luego showOne() del activo por defecto si existe.
+  - En CSS de ocultación NO se usa | escape para no romper el selector del ID.
 {% endcomment %}
 
 {% assign S = section.settings %}
@@ -69,15 +71,16 @@
 </style>
 
 {%- comment -%}
-  CSS para ocultar por defecto todos los carruseles indicados en los inputs (sin #).
-  (El JS luego mostrará el que toque.)
+  CSS para ocultar por defecto todos los carruseles indicados (sin '#').
+  Usamos !important por si el tema trae display:block o inline styles.
+  OJO: aquí NO usamos | escape para no romper el selector (#id).
 {%- endcomment -%}
 <style id="catstrip-hide-ids-{{ section.id }}">
-  {% if S.i1_target_id != blank %}#{{ S.i1_target_id | escape }}{display:none;} {% endif %}
-  {% if S.i2_target_id != blank %}#{{ S.i2_target_id | escape }}{display:none;} {% endif %}
-  {% if S.i3_target_id != blank %}#{{ S.i3_target_id | escape }}{display:none;} {% endif %}
-  {% if S.i4_target_id != blank %}#{{ S.i4_target_id | escape }}{display:none;} {% endif %}
-  {% if S.i5_target_id != blank %}#{{ S.i5_target_id | escape }}{display:none;} {% endif %}
+  {% if S.i1_target_id != blank %}#{{ S.i1_target_id | strip }}{display:none !important;} {% endif %}
+  {% if S.i2_target_id != blank %}#{{ S.i2_target_id | strip }}{display:none !important;} {% endif %}
+  {% if S.i3_target_id != blank %}#{{ S.i3_target_id | strip }}{display:none !important;} {% endif %}
+  {% if S.i4_target_id != blank %}#{{ S.i4_target_id | strip }}{display:none !important;} {% endif %}
+  {% if S.i5_target_id != blank %}#{{ S.i5_target_id | strip }}{display:none !important;} {% endif %}
 </style>
 
 <section id="catstrip-{{ section.id }}" class="category-strip-simple 3didsprime-strip">
@@ -180,10 +183,19 @@
     }
     function showOne(id){
       var el = document.getElementById(id);
-      if(el){ el.style.display = ''; } // inline style > CSS default hidden
+      if(el){ el.style.display = ''; } // inline style > CSS con !important (muestra)
     }
     function clearActive(){
       items.forEach(function(li){ li.classList.remove('is-active'); });
+    }
+
+    // Al cargar: ocultar todo SIEMPRE, luego mostrar el activo por defecto si existe
+    hideAll();
+    var defaultIndex = {{ S.default_active | default: 1 }}; // 1..5
+    var defaultItem = items[defaultIndex - 1];
+    if(defaultItem){
+      var defId = defaultItem.getAttribute('data-target');
+      if(defId){ showOne(defId); defaultItem.classList.add('is-active'); }
     }
 
     // Click: subraya y muestra carrusel objetivo (si existe)
@@ -191,10 +203,9 @@
       a.addEventListener('click', function(e){
         var li = a.closest('.item');
         if(!li) return;
-
         var targetId = li.getAttribute('data-target');
         if(targetId){
-          e.preventDefault();      // controlamos el toggle, no navegamos
+          e.preventDefault(); // control de toggle
           hideAll();
           showOne(targetId);
           clearActive();
@@ -202,19 +213,6 @@
         }
       });
     });
-
-    // Estado inicial: mostrar por defecto el carrusel elegido (si existe)
-    var defaultIndex = {{ S.default_active | default: 1 }}; // 1..5
-    var defaultItem = items[defaultIndex - 1];
-    if(defaultItem){
-      var defId = defaultItem.getAttribute('data-target');
-      if(defId){
-        hideAll();
-        showOne(defId);
-        clearActive();
-        defaultItem.classList.add('is-active');
-      }
-    }
   })();
 </script>
 
