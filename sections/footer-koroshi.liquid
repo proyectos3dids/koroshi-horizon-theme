@@ -1,0 +1,445 @@
+<section class="ks-footer"
+  style="
+    --container: 1200px;
+    --pad-y: 32px;
+    --bg: #ffffff;
+    --text: #000000;
+    --link: #000000;
+    --link-hover: #222222;
+    --sep-color: #000000;
+    --sep-thick-desktop: 1px;
+    --sep-thick-mobile: 1px;
+    --col-gap: 28px;
+    --row-gap: 20px;
+    --heading-size: 14px;
+    --link-size: 13px;
+    --logo-w: {{ section.settings.logo_w }}px;
+    --logo-shift-desktop: {{ section.settings.logo_shift_desktop }}px;
+    --social-icon: 24px;
+    --pay-icon-w: 36px;
+      padding-left:2rem;
+      padding-right:2rem;
+  "
+>
+  <style>
+    .ks-footer{background:var(--bg);color:var(--text);}
+    .ks-footer a{color:var(--link);text-decoration:none;}
+    .ks-footer a:hover{color:var(--link-hover);}
+    .ks-footer .inner{margin:0 auto;padding:var(--pad-y) 0;position:relative;}
+    .ks-footer .inner::before,
+    .ks-footer .inner::after{
+      content:"";position:absolute;left:0;right:0;height:var(--sep-thick-mobile);
+      background:var(--sep-color);pointer-events:none;
+    }
+    .ks-footer .inner::before{top:0;}
+    .ks-footer .inner::after{bottom:0;}
+
+    /* Grid desktop (contenido superior) */
+    .ks-grid{
+      display:grid;align-items:start;
+      grid-template-columns:minmax(220px,.9fr) repeat(4,1fr);
+      column-gap:var(--col-gap);row-gap:var(--row-gap);
+    }
+    .ks-brand .logo{display:block;max-width:var(--logo-w);height:auto;margin:0 0 14px;}
+    .ks-brand .social{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+    .ks-brand .social a{display:inline-flex;line-height:0;}
+    .ks-brand .social svg{width:var(--social-icon);height:var(--social-icon);display:block;}
+
+    .ks-col h4{
+      font-size:var(--heading-size);margin:0 0 12px;font-weight:800;
+      letter-spacing:.02em;text-transform:uppercase;
+    }
+    .ks-col ul{list-style:none;margin:0;padding:0;}
+    .ks-col li{margin:0 0 8px;}
+    .ks-col li a{font-size:var(--link-size);}
+
+    /* Acordeones móvil */
+    .ks-acc{display:none;}
+    .ks-acc details{border-bottom:var(--sep-thick-mobile) solid var(--sep-color);}
+    .ks-acc details:first-child{border-top:var(--sep-thick-mobile) solid var(--sep-color);}
+    .ks-acc summary{
+      list-style:none;cursor:pointer;padding:14px 0;display:flex;align-items:center;
+      justify-content:space-between;font-weight:800;text-transform:uppercase;
+    }
+    .ks-acc summary::-webkit-details-marker{display:none;}
+
+    
+    {% comment %} .ks-acc summary::after{content:"+";font-size:18px;line-height:1;}
+    .ks-acc details[open] summary::after{content:"–";} {% endcomment %}
+    /* Icono del acordeón (mismo SVG que rota al abrir) */
+        .ks-acc summary::after{
+        content: "" !important;               /* anula el "+" */
+        display: inline-block;
+        width: 18px;                          /* ajusta si quieres */
+        height: 18px;
+        margin-left: 8px;
+        background: center / contain no-repeat url("https://cdn.shopify.com/s/files/1/0922/7858/7767/files/add.svg?v=1758144652");
+        transform: rotate(0deg);
+        transform-origin: 50% 50%;
+        transition: transform .25s ease;
+        }
+        .ks-acc details[open] summary::after{
+        transform: rotate(180deg);            /* cambia a 90deg si prefieres */
+        }
+        
+
+    .ks-acc .acc-body{padding:10px 0 16px;}
+    .ks-acc .acc-body ul{list-style:none;margin:0;padding:0;}
+    .ks-acc .acc-body li{margin:0 0 10px;}
+    .ks-acc .acc-body a{font-size:var(--link-size);}
+
+    /* ----------- BARRA INFERIOR (selectores, copy, pagos) ----------- */
+    .ks-bottom{
+      display:grid;
+      grid-template-areas: "locale copy pay";
+      grid-template-columns: 1fr auto 1fr;
+      align-items:center;
+      column-gap:12px;
+      margin-top:22px;
+    }
+    .ks-locale{grid-area:locale;justify-self:start;display:flex;gap:16px;align-items:center;}
+    .ks-copy{grid-area:copy;justify-self:center;font-size:12px;opacity:.9;}
+    .ks-pay{grid-area:pay;justify-self:end;display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+    .ks-pay svg{width:var(--pay-icon-w);height:auto;display:block;}
+
+    /* Selectores estilizados (subrayados + flecha) */
+    .ks-select{position:relative; padding-right:18px;}
+    .ks-select select{
+      appearance:none; -webkit-appearance:none; -moz-appearance:none;
+      border:0; border-bottom:var(--sep-thick-desktop) solid var(--sep-color);
+      background:transparent; color:var(--text);
+      font-size:14px; padding:6px 0; line-height:1.2; cursor:pointer;
+    }
+    .ks-select::after{
+      content:"▾"; position:absolute; right:0; top:50%; transform:translateY(-50%);
+      pointer-events:none;
+    }
+
+    /* Responsive */
+    @media (max-width: 989px){
+      .ks-grid{grid-template-columns:1fr;}
+      .ks-brand{text-align:center;}
+      .ks-brand .social{justify-content:center;}
+      .ks-col.ks-desktop{display:none;}
+      .ks-acc{display:block;}
+
+      .ks-bottom{
+        grid-template-areas:
+          "locale"
+          "copy"
+          "pay";
+        grid-template-columns:1fr;
+        row-gap:12px;
+      }
+      .ks-locale,.ks-copy,.ks-pay{justify-self:center;}
+      .ks-select select{border-bottom:var(--sep-thick-mobile) solid var(--sep-color);}
+    }
+    @media (min-width: 990px){
+      .ks-footer .inner::before,
+      .ks-footer .inner::after{height:var(--sep-thick-desktop);}
+    }
+
+
+    .ks-footer .inner::before,
+    .ks-footer .inner::after{
+    content: none !important;
+    }
+
+    
+    @media (max-width: 989px){
+    .ks-footer{
+        padding-left: 5px !important;
+        padding-right: 5px !important;
+    }
+    .ks-footer .ks-acc details:first-child{
+        border-top: 0 !important;
+    }
+    .ks-brand .logo{
+        margin:0 auto;
+    }
+    }
+
+    .ks-brand .social img{
+    width: var(--social-icon);
+    height: auto;
+    display: block;
+    }
+
+    
+    @media (min-width: 990px){
+
+    .ks-brand .logo{
+        margin-left: var(--logo-shift-desktop) !important; 
+    }
+    .ks-bottom{
+        margin-top:6rem;
+    }
+
+    }
+
+    .ks-pay img{
+    width: var(--pay-icon-w);
+    height: auto;
+    display: block;
+    }
+    .ks-footer .inner{
+    padding-bottom:15px;
+    }
+  </style>
+
+  <div class="inner">
+    <div class="ks-grid">
+      <!-- Brand + redes -->
+      <div class="ks-brand">
+        {%- if section.settings.logo != blank -%}
+        <img class="logo"
+            src="{{ section.settings.logo | image_url }}"
+            alt="{{ section.settings.logo_alt | escape }}">
+        {%- endif -%}
+        <br>
+        <div class="social">
+            {%- if section.settings.tiktok_icon != blank and section.settings.tiktok_url != blank -%}
+                <a href="{{ section.settings.tiktok_url }}" aria-label="{{ section.settings.tiktok_alt | escape }}" target="_blank" rel="noopener">
+                <img src="{{ section.settings.tiktok_icon | image_url }}" alt="{{ section.settings.tiktok_alt | escape }}">
+                </a>
+            {%- endif -%}
+
+            {%- if section.settings.instagram_icon != blank and section.settings.instagram_url != blank -%}
+                <a href="{{ section.settings.instagram_url }}" aria-label="{{ section.settings.instagram_alt | escape }}" target="_blank" rel="noopener">
+                <img src="{{ section.settings.instagram_icon | image_url }}" alt="{{ section.settings.instagram_alt | escape }}">
+                </a>
+            {%- endif -%}
+
+            {%- if section.settings.facebook_icon != blank and section.settings.facebook_url != blank -%}
+                <a href="{{ section.settings.facebook_url }}" aria-label="{{ section.settings.facebook_alt | escape }}" target="_blank" rel="noopener">
+                <img src="{{ section.settings.facebook_icon | image_url }}" alt="{{ section.settings.facebook_alt | escape }}">
+                </a>
+            {%- endif -%}
+
+            {%- if section.settings.x_icon != blank and section.settings.x_url != blank -%}
+                <a href="{{ section.settings.x_url }}" aria-label="{{ section.settings.x_alt | escape }}" target="_blank" rel="noopener">
+                <img src="{{ section.settings.x_icon | image_url }}" alt="{{ section.settings.x_alt | escape }}">
+                </a>
+            {%- endif -%}
+            </div>
+      </div>
+
+   <!-- 4 columnas (desktop) -->
+{%- for block in section.blocks -%}
+  {%- if block.type == 'menu_group' -%}
+    <div class="ks-col ks-desktop" {{ block.shopify_attributes }}>
+      <h4>{{ block.settings.title }}</h4>
+      {%- if block.settings.menu != blank and block.settings.menu.links.size > 0 -%}
+        <ul>
+          {%- for link in block.settings.menu.links -%}
+            <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+{%- endfor -%}
+
+<!-- Acordeones (móvil) -->
+<div class="ks-acc">
+  {%- for block in section.blocks -%}
+    {%- if block.type == 'menu_group' -%}
+      <details {{ block.shopify_attributes }}{% if block.settings.open_default %} open{% endif %}>
+        <summary>{{ block.settings.title }}</summary>
+        <div class="acc-body">
+          {%- if block.settings.menu != blank and block.settings.menu.links.size > 0 -%}
+            <ul>
+              {%- for link in block.settings.menu.links -%}
+                <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+              {%- endfor -%}
+            </ul>
+          {%- endif -%}
+        </div>
+      </details>
+    {%- endif -%}
+  {%- endfor -%}
+</div>
+
+    </div>
+
+    <!-- Bottom: selectores (izq) + copy (centro) + pagos (dcha) -->
+    <div class="ks-bottom">
+      <div class="ks-locale" aria-label="Selectores de localización">
+
+        {% comment %}
+          <div class="ks-select">
+          <label class="visually-hidden" for="ks-lang">Idioma</label>
+          <select id="ks-lang">
+            <option>Español</option>
+            <option>English</option>
+            <option>Français</option>
+            <option>Deutsch</option>
+          </select>
+        </div>
+        <div class="ks-select">
+          <label class="visually-hidden" for="ks-currency">Moneda</label>
+          <select id="ks-currency">
+            <option>EUR €</option>
+            <option>USD $</option>
+            <option>GBP £</option>
+          </select>
+        </div> 
+        {% endcomment %}
+
+     {% render 'popup-locale-currency' %}
+
+      </div>
+
+      <div class="ks-copy">© Koroshi</div>
+
+      <div class="ks-pay" aria-label="Métodos de pago">
+  {%- if section.settings.pay_apple != blank -%}
+    <img loading="lazy" src="{{ section.settings.pay_apple | image_url }}" alt="{{ section.settings.pay_apple_alt | escape }}">
+  {%- endif -%}
+
+  {%- if section.settings.pay_gpay != blank -%}
+    <img loading="lazy" src="{{ section.settings.pay_gpay | image_url }}" alt="{{ section.settings.pay_gpay_alt | escape }}">
+  {%- endif -%}
+
+  {%- if section.settings.pay_mastercard != blank -%}
+    <img loading="lazy" src="{{ section.settings.pay_mastercard | image_url }}" alt="{{ section.settings.pay_mastercard_alt | escape }}">
+  {%- endif -%}
+
+  {%- if section.settings.pay_maestro != blank -%}
+    <img loading="lazy" src="{{ section.settings.pay_maestro | image_url }}" alt="{{ section.settings.pay_maestro_alt | escape }}">
+  {%- endif -%}
+
+  {%- if section.settings.pay_paypal != blank -%}
+    <img loading="lazy" src="{{ section.settings.pay_paypal | image_url }}" alt="{{ section.settings.pay_paypal_alt | escape }}">
+  {%- endif -%}
+
+  {%- if section.settings.pay_visa != blank -%}
+    <img loading="lazy" src="{{ section.settings.pay_visa | image_url }}" alt="{{ section.settings.pay_visa_alt | escape }}">
+  {%- endif -%}
+</div>
+
+    </div>
+  </div>
+
+  <script>
+    (function(){
+      var mq = window.matchMedia('(max-width: 989px)');
+      var wrap = document.querySelector('.ks-footer .ks-acc');
+      if(!wrap) return;
+      var items = wrap.querySelectorAll('details');
+      items.forEach(function(d){
+        d.addEventListener('toggle', function(){
+          if (mq.matches && d.open){
+            items.forEach(function(o){ if(o!==d) o.removeAttribute('open'); });
+          }
+        });
+      });
+    })();
+  </script>
+</section>
+
+{% schema %}
+{
+  "name": "Footer — New",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo (imagen)"
+    },
+    {
+      "type": "range",
+      "id": "logo_shift_desktop",
+      "label": "Desplazar logo a la izquierda (desktop, px)",
+      "min": -100,
+      "max": 0,
+      "step": 1,
+      "default": 0
+    },
+    {
+      "type": "text",
+      "id": "logo_alt",
+      "label": "Alt del logo",
+      "default": "KORÖSHI BRAND"
+    },
+    {
+      "type": "range",
+      "id": "logo_w",
+      "label": "Ancho máximo del logo (px)",
+      "min": 80,
+      "max": 320,
+      "step": 4,
+      "default": 200
+    },
+    { "type": "url", "id": "tiktok_url", "label": "URL TikTok" },
+    { "type": "image_picker", "id": "tiktok_icon", "label": "Icono TikTok" },
+    { "type": "text", "id": "tiktok_alt", "label": "Alt TikTok", "default": "TikTok" },
+
+    { "type": "url", "id": "instagram_url", "label": "URL Instagram" },
+    { "type": "image_picker", "id": "instagram_icon", "label": "Icono Instagram" },
+    { "type": "text", "id": "instagram_alt", "label": "Alt Instagram", "default": "Instagram" },
+
+    { "type": "url", "id": "facebook_url", "label": "URL Facebook" },
+    { "type": "image_picker", "id": "facebook_icon", "label": "Icono Facebook" },
+    { "type": "text", "id": "facebook_alt", "label": "Alt Facebook", "default": "Facebook" },
+
+    { "type": "url", "id": "x_url", "label": "URL X (Twitter)" },
+    { "type": "image_picker", "id": "x_icon", "label": "Icono X (Twitter)" },
+    { "type": "text", "id": "x_alt", "label": "Alt X (Twitter)", "default": "X" }
+    ,
+    { "type": "image_picker", "id": "pay_apple",      "label": "Apple Pay (imagen)" },
+    { "type": "text",         "id": "pay_apple_alt",  "label": "Alt Apple Pay", "default": "Apple Pay" },
+
+    { "type": "image_picker", "id": "pay_gpay",       "label": "Google Pay (imagen)" },
+    { "type": "text",         "id": "pay_gpay_alt",   "label": "Alt Google Pay", "default": "Google Pay" },
+
+    { "type": "image_picker", "id": "pay_mastercard", "label": "Mastercard (imagen)" },
+    { "type": "text",         "id": "pay_mastercard_alt", "label": "Alt Mastercard", "default": "Mastercard" },
+
+    { "type": "image_picker", "id": "pay_maestro",    "label": "Maestro (imagen)" },
+    { "type": "text",         "id": "pay_maestro_alt","label": "Alt Maestro", "default": "Maestro" },
+
+    { "type": "image_picker", "id": "pay_paypal",     "label": "PayPal (imagen)" },
+    { "type": "text",         "id": "pay_paypal_alt", "label": "Alt PayPal", "default": "PayPal" },
+
+    { "type": "image_picker", "id": "pay_visa",       "label": "Visa (imagen)" },
+    { "type": "text",         "id": "pay_visa_alt",   "label": "Alt Visa", "default": "Visa" }
+  ],
+  "blocks": [
+    {
+      "type": "menu_group",
+      "name": "Grupo de enlaces",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Título (summary / encabezado)",
+          "default": "INFORMACIÓN"
+        },
+        {
+          "type": "link_list",
+          "id": "menu",
+          "label": "Menú a mostrar"
+        },
+        {
+          "type": "checkbox",
+          "id": "open_default",
+          "label": "Abrir por defecto (móvil)",
+          "default": false
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Footer — New",
+      "blocks": [
+        { "type": "menu_group", "settings": { "title": "INFORMACIÓN" } },
+        { "type": "menu_group", "settings": { "title": "GUÍA DE COMPRA" } },
+        { "type": "menu_group", "settings": { "title": "SOBRE KOROSHI" } },
+        { "type": "menu_group", "settings": { "title": "INFORMACIÓN LEGAL" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,494 @@
+{% if section.blocks.size > 1 %}
+  <script
+    src="{{ 'announcement-bar.js' | asset_url }}"
+    type="module"
+    fetchpriority="low"
+  ></script>
+{% endif %}
+
+<div class="section-background color-{{ section.settings.color_scheme }}"></div>
+<aside
+  class="announcement-bar spacing-style section section--{{ section.settings.section_width }} color-{{ section.settings.color_scheme }}"
+  style="{% render 'spacing-padding', settings: section.settings %}; --border-bottom-width: {{ section.settings.divider_width }}px;"
+>
+  {% liquid
+    assign autoplay = false
+    assign show_arrows = false
+    if section.blocks.size > 1
+      assign autoplay = true
+      assign show_arrows = true
+    endif
+  %}
+
+  <announcement-bar-component
+    class="announcement-bar__slider"
+    {% if autoplay == true %}
+      autoplay="{{ section.settings.speed }}" aria-live="polite"
+    {% endif %}
+  >
+    {% if show_arrows %}
+      {% render 'slideshow-arrows', icon_style: 'chevron' %}
+    {% endif %}
+
+    <div class="announcement-bar__slides">
+      {%- for block in section.blocks -%}
+        <div class="announcement-bar__slide" {{ block.shopify_attributes }}>
+          {%- if block.settings.link_url != blank -%}
+            <a class="announcement-bar__link" href="{{ block.settings.link_url }}"></a>
+          {%- endif -%}
+
+          <p class="announcement-bar__text">
+            {%- if block.settings.text_html != blank -%}
+              {{ block.settings.text_html }}
+            {%- elsif block.settings.text != blank -%}
+              {{ block.settings.text }}
+            {%- endif -%}
+          </p>
+
+          {%- if block.settings.enable_countdown -%}
+            <div
+              class="announcement-bar__countdown"
+              role="timer"
+              aria-live="polite"
+              data-target="{{ block.settings.countdown_target }}"
+              data-expired-behavior="{{ block.settings.expired_behavior }}"
+              data-expired-text="{{ block.settings.expired_text }}"
+              data-sep="{{ block.settings.separator }}"
+              data-label-days="{{ block.settings.label_days }}"
+              data-label-hours="{{ block.settings.label_hours }}"
+              data-label-mins="{{ block.settings.label_minutes }}"
+              data-label-secs="{{ block.settings.label_seconds }}"
+            >
+              <span class="cd__item cd__days">
+                <span class="cd__val">--</span>
+                <span class="cd__lab"></span>
+              </span>
+              <span class="cd__sep"></span>
+              <span class="cd__item cd__hours">
+                <span class="cd__val">--</span>
+                <span class="cd__lab"></span>
+              </span>
+              <span class="cd__sep"></span>
+              <span class="cd__item cd__mins">
+                <span class="cd__val">--</span>
+                <span class="cd__lab"></span>
+              </span>
+              <span class="cd__sep"></span>
+              <span class="cd__item cd__secs">
+                <span class="cd__val">--</span>
+                <span class="cd__lab"></span>
+              </span>
+            </div>
+          {%- endif -%}
+        </div>
+      {%- endfor -%}
+    </div>
+  </announcement-bar-component>
+</aside>
+
+{% stylesheet %}
+  .announcement-bar {
+    border-block-end: var(--border-bottom-width) solid var(--color-border);
+  }
+
+  .announcement-bar__slider {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    position: relative;
+
+    @media screen and (max-width: 749px) {
+      grid-column: 1 / -1;
+    }
+  }
+
+  .announcement-bar__slides {
+    display: grid;
+    grid: [stack] auto / [stack] auto;
+    width: calc(100% - var(--button-size) * 2);
+    max-width: 680px;
+    margin-inline: auto;
+  }
+
+  .announcement-bar__slides > * {
+    grid-area: stack;
+  }
+
+  .announcement-bar__slide {
+    place-content: center;
+    transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+
+    &[aria-hidden='true'] {
+      opacity: 0;
+      visibility: hidden;
+    }
+  }
+
+  .announcement-bar__slider slideshow-arrows {
+    padding: 0;
+    mix-blend-mode: normal;
+  }
+
+  .announcement-bar__slider slideshow-arrows .slideshow-control {
+    color: var(--color-foreground);
+  }
+
+  .announcement-bar__slider .slideshow-control {
+    display: flex;
+    padding: 0;
+    width: var(--button-size);
+    height: var(--button-size);
+    align-items: center;
+    justify-content: center;
+    opacity: 1;
+    animation: none;
+
+    @media screen and (min-width: 750px) {
+      --slideshow-control-offset: calc((var(--button-size) - var(--icon-size-xs)) / 2);
+
+      .section--page-width &.slideshow-control--previous {
+        transform: translateX(var(--slideshow-control-offset));
+      }
+    }
+  }
+
+  .announcement-bar__slider .slideshow-control .svg-wrapper {
+    width: var(--icon-size-xs);
+    height: var(--icon-size-xs);
+  }
+
+  .announcement-bar__text:first-child {
+    margin: 0;
+  }
+
+  .announcement-bar__link {
+    position: absolute;
+    inset: 0;
+  }
+
+  /* ===== Countdown ===== */
+  .announcement-bar__countdown {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    font-variant-numeric: tabular-nums;
+    margin-top: .25rem;
+  }
+
+  .announcement-bar__countdown .cd__item {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 2.5ch;
+  }
+
+  .announcement-bar__countdown .cd__val {
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .announcement-bar__countdown .cd__lab {
+    font-size: 0.75em;
+    opacity: .8;
+    line-height: 1.2;
+  }
+
+  .announcement-bar__countdown .cd__sep::before {
+    content: attr(data-sep);
+    display: inline-block;
+    transform: translateY(-10%);
+  }
+{% endstylesheet %}
+
+<script>
+  (function() {
+    const root = document.getElementById('shopify-section-{{ section.id }}');
+    if (!root) return;
+
+    // ==== Countdown per block (sin dependencias) ====
+    function pad2(n){ return (n < 10 ? '0' : '') + n; }
+
+    function parseTarget(str){
+      try {
+        if (!str) return null;
+        const d = new Date(str); // ISO con o sin offset; sin offset = hora local
+        return isNaN(d.getTime()) ? null : d;
+      } catch(e){ return null; }
+    }
+
+    function updateCountdown(el){
+      const targetStr = el.getAttribute('data-target');
+      const expiredBehavior = el.getAttribute('data-expired-behavior') || 'hide';
+      const expiredText = el.getAttribute('data-expired-text') || '';
+      const sep = el.getAttribute('data-sep') || ':';
+
+      const labDays  = el.getAttribute('data-label-days') || 'Días';
+      const labHours = el.getAttribute('data-label-hours') || 'Horas';
+      const labMins  = el.getAttribute('data-label-mins') || 'Min';
+      const labSecs  = el.getAttribute('data-label-secs') || 'Seg';
+
+      const daysEl  = el.querySelector('.cd__days .cd__val');
+      const hoursEl = el.querySelector('.cd__hours .cd__val');
+      const minsEl  = el.querySelector('.cd__mins .cd__val');
+      const secsEl  = el.querySelector('.cd__secs .cd__val');
+
+      const lDays  = el.querySelector('.cd__days .cd__lab');
+      const lHours = el.querySelector('.cd__hours .cd__lab');
+      const lMins  = el.querySelector('.cd__mins .cd__lab');
+      const lSecs  = el.querySelector('.cd__secs .cd__lab');
+
+      const seps = el.querySelectorAll('.cd__sep');
+      seps.forEach(s => s.setAttribute('data-sep', sep));
+
+      lDays.textContent  = labDays;
+      lHours.textContent = labHours;
+      lMins.textContent  = labMins;
+      lSecs.textContent  = labSecs;
+
+      const target = parseTarget(targetStr);
+      if (!target) {
+        handleExpired(el, expiredBehavior, expiredText);
+        return null;
+      }
+
+      function tick(){
+        const now = new Date().getTime();
+        const diff = target.getTime() - now;
+
+        if (diff <= 0) {
+          handleExpired(el, expiredBehavior, expiredText);
+          return false; // detener
+        }
+
+        const totalSeconds = Math.floor(diff / 1000);
+        const d = Math.floor(totalSeconds / 86400);
+        const h = Math.floor((totalSeconds % 86400) / 3600);
+        const m = Math.floor((totalSeconds % 3600) / 60);
+        const s = totalSeconds % 60;
+
+        daysEl.textContent  = String(d);
+        hoursEl.textContent = pad2(h);
+        minsEl.textContent  = pad2(m);
+        secsEl.textContent  = pad2(s);
+
+        return true;
+      }
+
+      if (!tick()) return null; // primera pintura
+
+      const id = setInterval(() => {
+        if (!tick()) clearInterval(id);
+      }, 1000);
+
+      return id;
+    }
+
+    function handleExpired(el, behavior, text){
+      if (behavior === 'hide') {
+        el.style.display = 'none'; // ocultar contador solo
+      } else {
+        el.innerHTML = '<span class="cd__expired">' + (text || 'Finalizado') + '</span>';
+      }
+    }
+
+    const timers = [];
+    root.querySelectorAll('.announcement-bar__countdown').forEach((el) => {
+      const id = updateCountdown(el);
+      if (id) timers.push(id);
+    });
+
+    // Limpieza si la sección sale del DOM en el editor
+    document.addEventListener('shopify:section:unload', function(e){
+      if (e && e.detail && e.detail.sectionId === '{{ section.id }}') {
+        timers.forEach(t => clearInterval(t));
+      }
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "cont",
+  "blocks": [
+    {
+      "type": "announcement",
+      "name": "Announcement",
+      "settings": [
+        {
+          "type": "richtext",
+          "id": "text_html",
+          "label": "Texto (richtext)",
+          "default": "<p><strong>Envío gratis</strong> en pedidos superiores a 50€</p>"
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Texto simple (alternativa a richtext)",
+          "default": "Envío gratis en pedidos superiores a 50€"
+        },
+        {
+          "type": "url",
+          "id": "link_url",
+          "label": "Enlace del anuncio",
+          "default": "/"
+        },
+        {
+          "type": "header",
+          "content": "Contador (opcional)"
+        },
+        {
+          "type": "checkbox",
+          "id": "enable_countdown",
+          "label": "Activar contador",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "countdown_target",
+          "label": "Fecha/hora objetivo (ISO)",
+          "info": "Formato recomendado: YYYY-MM-DDTHH:MM:SS (ej. 2035-12-31T23:59:59+01:00).",
+          "default": "2035-12-31T23:59:59+01:00"
+        },
+        {
+          "type": "text",
+          "id": "label_days",
+          "label": "Etiqueta días",
+          "default": "Días"
+        },
+        {
+          "type": "text",
+          "id": "label_hours",
+          "label": "Etiqueta horas",
+          "default": "Horas"
+        },
+        {
+          "type": "text",
+          "id": "label_minutes",
+          "label": "Etiqueta minutos",
+          "default": "Min"
+        },
+        {
+          "type": "text",
+          "id": "label_seconds",
+          "label": "Etiqueta segundos",
+          "default": "Seg"
+        },
+        {
+          "type": "text",
+          "id": "separator",
+          "label": "Separador entre bloques",
+          "default": ":"
+        },
+        {
+          "type": "select",
+          "id": "expired_behavior",
+          "label": "Al expirar",
+          "options": [
+            { "value": "hide", "label": "Ocultar contador" },
+            { "value": "text", "label": "Mostrar texto de expirado" }
+          ],
+          "default": "text"
+        },
+        {
+          "type": "text",
+          "id": "expired_text",
+          "label": "Texto al expirar (si corresponde)",
+          "default": "Promoción finalizada"
+        }
+      ]
+    }
+  ],
+  "enabled_on": {
+    "groups": ["header"]
+  },
+  "settings": [
+    {
+      "type": "range",
+      "id": "speed",
+      "label": "t:settings.scroll_speed",
+      "min": 2,
+      "max": 10,
+      "default": 5,
+      "unit": "sec"
+    },
+    {
+      "type": "header",
+      "content": "t:content.appearance"
+    },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "t:settings.section_width",
+      "options": [
+        { "value": "page-width", "label": "t:options.page" },
+        { "value": "full-width", "label": "t:options.full" }
+      ],
+      "default": "page-width"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "default": "scheme-4",
+      "label": "t:settings.color_scheme"
+    },
+    {
+      "type": "range",
+      "id": "divider_width",
+      "label": "t:settings.divider_thickness",
+      "min": 0,
+      "max": 5,
+      "step": 0.5,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 15
+    }
+  ],
+  "presets": [
+    {
+      "name": "cont",
+      "blocks": {
+        "announcement_1": {
+          "type": "announcement",
+          "settings": {
+            "text": "Rebajas: -20% en toda la tienda",
+            "link_url": "/",
+            "enable_countdown": true,
+            "countdown_target": "2035-12-31T23:59:59+01:00",
+            "label_days": "Días",
+            "label_hours": "Horas",
+            "label_minutes": "Min",
+            "label_seconds": "Seg",
+            "separator": ":",
+            "expired_behavior": "text",
+            "expired_text": "Promoción finalizada"
+          }
+        }
+      },
+      "block_order": ["announcement_1"]
+    }
+  ]
+}
+{% endschema %}

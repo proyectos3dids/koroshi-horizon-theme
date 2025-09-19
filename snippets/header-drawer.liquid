@@ -1,0 +1,1156 @@
+{%- doc -%}
+  Renders a header drawer menu triggered by the top details element.
+{%- enddoc -%}
+
+{% liquid
+  assign max_featured_items = 4
+  assign image_border_radius = block.settings.image_corner_radius
+
+  if block.settings.menu_style == 'featured_collections'
+    assign ratio = block.settings.featured_collections_aspect_ratio
+  elsif block.settings.menu_style == 'featured_products'
+    assign ratio = block.settings.featured_products_aspect_ratio
+  endif 
+
+  # Menú para tabs (ajuste global; fallback al del header)
+  assign quick_tabs_menu = settings.drawer_quick_tabs_menu
+  if quick_tabs_menu == blank
+    assign quick_tabs_menu = linklist
+  endif
+
+  # Logo para el drawer (prioriza header, luego global, luego texto)
+  assign drawer_logo = section.settings.logo | default: settings.logo
+  assign drawer_logo2 = section.settings.logo| default: settings.logo
+%}
+
+<script src="{{ 'header-drawer.js' | asset_url }}" type="module"></script>
+
+<style>
+  /* Fila superior */
+  .menu-drawer__toprow{
+    display:flex; align-items:center; gap:.75rem;
+    padding:.75rem 1rem; border-bottom:1px solid rgba(0,0,0,.08);
+  }
+  .menu-drawer__close-button{ flex:0 0 auto; background:transparent; }
+  .menu-drawer__brand{ display:none; align-items:center; min-height:32px; }
+  .menu-drawer__brand-link{ display:inline-flex; align-items:center; text-decoration:none; }
+  .menu-drawer__logo-image{ height:22px; width:auto; display:block; }
+  .menu-drawer__logo-text{ font-weight:700; font-size:.95rem; letter-spacing:.04em; text-transform:uppercase; }
+
+  /* En móvil: logo izq, X der; tabs desktop ocultas */
+  @media (max-width: 749px){
+    .menu-drawer__brand{ display:flex; order:1; }
+    .menu-drawer__close-button{ order:2; margin-left:auto; }
+    .menu-drawer__toprow .menu-drawer__quick-tabs--desktop{ display:none; }
+    .menu-drawer__quick-tabs--mobile{ display:block; padding: .25rem 1rem .5rem; }
+  }
+  @media (min-width: 750px){
+    .menu-drawer__quick-tabs--mobile{ display:none; }
+  }
+
+  /* Tabs */
+  .menu-drawer__quick-tabs{ flex:1 1 auto; overflow-x:auto; -webkit-overflow-scrolling:touch; }
+  .menu-drawer__quick-tabs-list{ display:flex; gap:1rem; white-space:nowrap; margin:0; padding:0; list-style:none; }
+  .menu-drawer__quick-tab{ background:none; border:none; cursor:pointer; text-transform:uppercase; letter-spacing:.04em; font-size:.78rem; line-height:1; padding:.4rem .1rem; opacity:.9; }
+  .menu-drawer__quick-tab.is-active{ font-weight:600; opacity:1; border-bottom:2px solid currentColor; }
+
+  /* Panels de submenú */
+  .menu-drawer__tab-panels{ padding: .75rem 1rem 0 1rem; }
+  .menu-drawer__tab-panel{ display:none; }
+  .menu-drawer__tab-panel.is-active{ display:block; }
+
+  /* Listas internas */
+  .menu-drawer__menu{ list-style:none; padding-inline:0; margin:0; }
+  .menu-drawer__menu--childlist{ padding-inline-start:0;}
+  .menu-drawer__list-item{ display:flex; }
+  .menu-drawer__menu-item{ display:flex; width:100%; padding:.5rem 0; align-items:center; justify-content:space-between; text-decoration:none; }
+  .menu-drawer__menu-item-text{ overflow:hidden; text-overflow:ellipsis; }
+  .menu-drawer__empty{ opacity:.7; padding:.5rem 0; }
+</style>
+
+<script>
+  // Tabs: seleccionar y mostrar panel correspondiente (desktop y móvil sincronizados)
+  document.addEventListener('DOMContentLoaded', function(){
+    const tabs = document.querySelectorAll('.menu-drawer__quick-tab');
+    const panels = document.querySelectorAll('.menu-drawer__tab-panel');
+
+    function activateByTabId(tabId){
+      tabs.forEach(t => t.classList.toggle('is-active', t.dataset.tab === tabId));
+      panels.forEach(p => p.classList.toggle('is-active', p.id === tabId));
+    }
+
+    const initial = document.querySelector('.menu-drawer__quick-tab.is-active') || tabs[0];
+    if(initial){ activateByTabId(initial.dataset.tab); }
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', function(e){
+        e.preventDefault();
+        activateByTabId(this.dataset.tab);
+      });
+    });
+  });
+</script>
+
+<header-drawer
+  class="header-drawer {{ class }}"
+  style="--menu-image-border-radius: {{ image_border_radius }}px;"
+>
+  <details id="Details-menu-drawer-container" class="menu-drawer-container" ref="details" scroll-lock>
+    <summary
+      class="header__icon header__icon--menu header__icon--summary"
+      aria-label="{{ 'accessibility.menu' | t }}"
+      on:click="/toggle"
+    >
+      <span class="svg-wrapper header-drawer-icon header-drawer-icon--open">
+        {{- 'icon-menu.svg' | inline_asset_content -}}
+      </span>
+      <span class="svg-wrapper header-drawer-icon header-drawer-icon--close">
+        {{- 'icon-close.svg' | inline_asset_content -}}
+      </span>
+    </summary>
+
+    <div data-header-drawer class="menu-drawer motion-reduce color-{{ settings.drawer_color_scheme }}">
+      <!-- Toprow: en móvil se ve logo izq y X der; en desktop queda como estaba -->
+      <div class="menu-drawer__toprow" style="{%- render 'menu-font-styles', settings: block.settings, menu_type: 'drawer' %}">
+        <!-- LOGO (solo móvil) -->
+        <div class="menu-drawer__brand">
+          <a class="menu-drawer__brand-link" href="{{ routes.root_url }}" aria-label="{{ shop.name }}">
+            {% if drawer_logo2 != blank %}
+              {{ drawer_logo2
+                | image_url: width: 720
+                | image_tag: loading: 'lazy', class: 'pip menu-drawer__logo-image', alt: shop.name
+              }}
+            {% else %}
+              <span class="menu-drawer__logo-text">{{ shop.name }}</span>
+            {% endif %}
+          </a>
+        </div>
+        <style> .pip{height: 42px;} </style>
+
+        <!-- Botón cerrar -->
+        <button class="button-closemovil button menu-drawer__close-button" type="button" aria-label="{{ 'actions.close' | t }}" on:click="/close">
+          <span class="svg-wrapper header-drawer-icon header-drawer-icon--close">
+            {{- 'icon-close.svg' | inline_asset_content -}}
+          </span>
+        </button>
+
+        <!-- Tabs (solo desktop en la toprow) -->
+        <nav class="menu-drawer__quick-tabs menu-drawer__quick-tabs--desktop" aria-label="Categorías rápidas">
+          <ul class="menu-drawer__quick-tabs-list" role="list">
+            {%- for link in quick_tabs_menu.links -%}
+              {%- assign tab_id = 'tab-' | append: forloop.index -%}
+              {%- assign display_title = link.title | remove: '#' -%}
+              <li class="menu-drawer__quick-tabs-item{% if link.title contains '#' %} menu-drawer__quick-tabs-item--special{% endif %}">
+                <button type="button"
+                  class="menu-drawer__quick-tab{% if forloop.first %} is-active{% endif %}"
+                  data-tab="{{ tab_id }}"
+                  {% if link.title contains '#' and settings.drawer_quick_tab_special_color != blank %}
+                    style="color: {{ settings.drawer_quick_tab_special_color }};"
+                  {% endif %}
+                >{{- display_title | escape -}}</button>
+              </li>
+            {%- endfor -%}
+          </ul>
+        </nav>
+
+      </div>
+
+      <!-- Las mismas tabs, solo móvil, justo debajo -->
+      <nav class="menu-drawer__quick-tabs menu-drawer__quick-tabs--mobile" aria-label="Categorías rápidas (móvil)">
+        <ul class="menu-drawer__quick-tabs-list" role="list">
+          {%- for link in quick_tabs_menu.links -%}
+            {%- assign tab_id = 'tab-' | append: forloop.index -%}
+            {%- assign display_title = link.title | remove: '#' -%}
+            <li class="menu-drawer__quick-tabs-item{% if link.title contains '#' %} menu-drawer__quick-tabs-item--special{% endif %}">
+              <button type="button"
+                class="menu-drawer__quick-tab{% if forloop.first %} is-active{% endif %}"
+                data-tab="{{ tab_id }}"
+                {% if link.title contains '#' and settings.drawer_quick_tab_special_color != blank %}
+                  style="color: {{ settings.drawer_quick_tab_special_color }};"
+                {% endif %}
+              >{{- display_title | escape -}}</button>
+            </li>
+          {%- endfor -%}
+        </ul>
+      </nav>
+      <style>.menu-drawer__quick-tabs--mobile{ flex: none !important; }</style>
+      
+
+      <!-- Panels: un submenú por cada tab -->
+    
+
+{%- assign icon_submenu_open = 'https://cdn.shopify.com/s/files/1/0922/7858/7767/files/Vector_22.svg?v=1758028835' -%}
+{%- assign icon_submenu_back = 'https://cdn.shopify.com/s/files/1/0922/7858/7767/files/Vector_23.svg?v=1758028864' -%}
+
+<nav class="menu-drawer__navigation" style="
+  {%- render 'menu-font-styles', settings: block.settings, menu_type: 'drawer' -%}
+  {%- render 'submenu-font-styles', settings: block.settings -%}
+">
+  <div class="menu-drawer__tab-panels">
+    {%- for link in quick_tabs_menu.links -%}
+      {%- assign panel_id = 'tab-' | append: forloop.index -%}
+      <div id="{{ panel_id }}" class="menu-drawer__tab-panel{% if forloop.first %} is-active{% endif %}">
+        {%- if link.links != blank -%}
+          <ul class="menu-drawer__menu has-submenu menu-drawer__menu--childlist" role="list">
+            {%- for childlink in link.links -%}
+              <li class="menu-drawer__list-item">
+                {%- if childlink.links == blank -%}
+                  <a href="{{ childlink.url }}"
+                     class="menu-drawer__menu-item menu-drawer__menu-item--parent{% if childlink.current %} menu-drawer__menu-item--active{% endif %}"
+                     {% if childlink.current %}aria-current="page"{% endif %}>
+                    <span class="a menu-drawer__menu-item-text">{{ childlink.title | escape }}</span>
+                  </a>
+                {%- else -%}
+                  {%- capture submenu_id -%}submenu-{{ forloop.parentloop.index0 }}-{{ forloop.index0 }}{%- endcapture -%}
+
+                  <!-- Botón que abre el submenú -->
+                  <button
+                    type="button"
+                    class="menu-drawer__menu-item menu-drawer__menu-item--parent js-open-submenu"
+                    aria-haspopup="true"
+                    aria-controls="{{ submenu_id }}"
+                    aria-expanded="false"
+                    data-target="{{ submenu_id }}"
+                    style="cursor:pointer;" 
+                  >
+                    <span style="cursor:pointer;" class="menu-drawer__menu-item-text">{{ childlink.title | escape }}</span>
+                    <img class="submenu-caret" src="{{ icon_submenu_open }}" alt="">
+                  </button>
+
+                  <!-- Panel del submenú (oculto) -->
+                  <div id="{{ submenu_id }}" class="menu-drawer__submenu" aria-hidden="true">
+                    <div class="menu-drawer__inner-submenu">
+                      <button style="cursor:pointer;" type="button" class="menu-drawer__back-button js-close-submenu" data-target="{{ submenu_id }}">
+                        <span class="svg-wrapper">
+                          <img class="submenu-back" src="{{ icon_submenu_back }}" alt="">
+                        </span>
+                        {{ childlink.title | escape }}
+                      </button>
+
+                      <ul class="menu-drawer__menu menu-drawer__menu--childlist" role="list">
+                        {%- for grandchildlink in childlink.links -%}
+                          <li style="cursor:pointer;"  class="menu-drawer__list-item">
+                            <a href="{{ grandchildlink.url }}"
+                               class="menu-drawer__menu-item menu-drawer__menu-item--child{% if grandchildlink.current %} menu-drawer__menu-item--active{% endif %}"
+                               {% if grandchildlink.current %}aria-current="page"{% endif %}>
+                              <span style="margin-left:1.5rem; cursor:pointer;" class="b menu-drawer__menu-item-text">{{ grandchildlink.title | escape }}</span>
+                            </a>
+                          </li>
+                        {%- endfor -%}
+                      </ul>
+
+
+<div class="menu-drawer__mobile-promos">
+    <div class="mobile-promo">
+    <a class="mobile-promo__card" href="{{ settings.mobile_promo_3_href }}">
+        {% if settings.mobile_promo_3_img != blank %}
+          <img class="mobile-promo__img" src="{{ settings.mobile_promo_3_img | image_url }}" alt="{{ settings.mobile_promo_3_label }}">
+        {% endif %}
+        <span class="mobile-promo__caption">{{ settings.mobile_promo_3_label }}</span>
+      </a>
+    </div>
+</div>
+
+
+                    </div>
+                  </div>
+                {%- endif -%}
+              </li>
+            {%- endfor -%}
+          </ul>
+        {%- else -%}
+          <p class="menu-drawer__empty">Sin submenú.</p>
+        {%- endif -%}
+      </div>
+    {%- endfor -%}
+  </div>
+</nav>
+
+<style>
+/* ====== NAV SUBMENÚ NAVEGABLE (añadidos) ====== */
+
+
+@media (max-width: 989px){
+  .button-closemovil{
+    padding: 0 !important;
+  }
+}
+
+
+/* Estado abierto del panel */
+.menu-drawer__submenu.is-open{
+  transform: translateX(0);
+  visibility: visible;
+  opacity: 1;
+}
+
+/* Que el submenú no tape logo+tabs en móvil */
+@media (max-width: 749px){
+  .menu-drawer__submenu{
+    top: var(--submenu-top-offset, 0px);
+    height: calc(100dvh - var(--submenu-top-offset, 0px));
+  }
+}
+
+/* Botón que abre submenú SIN fondo ni borde */
+.menu-drawer__menu-item.js-open-submenu{
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  padding: var(--padding-2xs) 0; /* igual que los <a> */
+}
+.menu-drawer__menu-item.js-open-submenu:focus{ outline: none; }
+
+/* Botón volver sin fondo/borde */
+.menu-drawer__back-button{
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+/* Iconos */
+.submenu-caret{ width: 18px; height: 18px; margin-left: .5rem; }
+.submenu-back{  width: 16px; height: 16px; }
+
+/* Solo cuando el panel de submenú está abierto */
+.menu-drawer__submenu.is-open .menu-drawer__menu--childlist{
+  padding: var(--padding-md) var(--padding-xl);
+}
+
+.menu-drawer__menu-item-text {
+font-size: var(--menu-parent-font-size);
+}
+
+/* ===== Underline en hover para todo el menú del drawer ===== */
+:root{
+  /* Cambia este color si quieres otro acento */
+  --drawer-hover-underline-color: rgb(var(--color-foreground));
+  --drawer-underline-thickness: 2px;
+}
+
+/* Texto con borde inferior transparente por defecto */
+.menu-drawer__menu-item-text{
+  display: inline-block;
+  border-bottom: var(--drawer-underline-thickness) solid transparent;
+  transition: border-color .18s ease, color .18s ease;
+}
+
+/* Aplica al pasar el ratón / foco / activo */
+.menu-drawer__menu-item:hover .menu-drawer__menu-item-text,
+.menu-drawer__menu-item:focus .menu-drawer__menu-item-text,
+.menu-drawer__menu-item--active .menu-drawer__menu-item-text{
+  border-bottom-color: var(--drawer-hover-underline-color);
+}
+
+/* Botones que abren submenú (también tienen texto dentro) */
+.menu-drawer__menu-item.js-open-submenu .menu-drawer__menu-item-text{
+  border-bottom-color: transparent;
+}
+.menu-drawer__menu-item.js-open-submenu:hover .menu-drawer__menu-item-text,
+.menu-drawer__menu-item.js-open-submenu:focus .menu-drawer__menu-item-text{
+  border-bottom-color: var(--drawer-hover-underline-color);
+}
+
+/* (Opcional) Quick tabs superior con el mismo comportamiento/colores */
+.menu-drawer__quick-tab{
+  border-bottom: var(--drawer-underline-thickness) solid transparent;
+  transition: border-color .18s ease, color .18s ease;
+}
+.menu-drawer__quick-tab:hover,
+.menu-drawer__quick-tab.is-active{
+  border-bottom-color: var(--drawer-hover-underline-color);
+}
+
+/* (Opcional) Enlaces del footer sticky con el mismo subrayado */
+.menu-drawer__sticky-link{
+  border-bottom: var(--drawer-underline-thickness) solid transparent;
+  transition: border-color .18s ease;
+}
+.menu-drawer__sticky-link:hover{
+  border-bottom-color: var(--drawer-hover-underline-color);
+}
+
+.menu-drawer__back-button{
+font-weight:700;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  // Calcula offset para que el submenú empiece debajo del logo + tabs
+  function setSubmenuOffset(){
+    var topRow = document.querySelector('.menu-drawer__toprow');
+    var mobileTabs = document.querySelector('.menu-drawer__quick-tabs--mobile');
+    var offset = (topRow ? topRow.offsetHeight : 0) + (mobileTabs ? mobileTabs.offsetHeight : 0);
+    document.documentElement.style.setProperty('--submenu-top-offset', offset + 'px');
+  }
+  setSubmenuOffset();
+  window.addEventListener('resize', setSubmenuOffset);
+
+  // Abrir submenú
+  document.querySelectorAll('.js-open-submenu').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var id = this.dataset.target || this.getAttribute('aria-controls');
+      var panel = document.getElementById(id);
+      if(!panel) return;
+
+      // Cierra otros abiertos
+      document.querySelectorAll('.menu-drawer__submenu.is-open').forEach(function(p){
+        p.classList.remove('is-open');
+        p.setAttribute('aria-hidden','true');
+      });
+
+      panel.classList.add('is-open');
+      panel.setAttribute('aria-hidden','false');
+      this.setAttribute('aria-expanded','true');
+    });
+  });
+
+  // Volver atrás
+  document.querySelectorAll('.js-close-submenu').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var id = this.dataset.target;
+      var panel = document.getElementById(id);
+      if(!panel) return;
+      panel.classList.remove('is-open');
+      panel.setAttribute('aria-hidden','true');
+      var opener = document.querySelector('.js-open-submenu[data-target="'+id+'"]');
+      if(opener) opener.setAttribute('aria-expanded','false');
+    });
+  });
+});
+</script>
+
+       
+
+
+      <!-- Utilidades (idioma/país) -->
+      <div class="menu-drawer__utility-links menu-drawer__animated-element" style="--menu-drawer-animation-index: {{ linklist.links.size }};">
+        {% liquid
+          assign show_language = section.settings.show_language
+          if localization.available_languages.size <= 1
+            assign show_language = false
+          endif
+          assign show_country = section.settings.show_country
+          if localization.available_countries.size <= 1
+            assign show_country = false
+          endif
+        %}
+        {% if data_header_drawer_type == 'mobile-drawer' and show_country or show_language %}
+          {% render 'drawer-localization',
+            show_country: show_country,
+            show_language: show_language,
+            country_style: section.settings.country_selector_style
+          %}
+        {%- endif -%}
+      </div>
+
+
+      <!-- ===== PROMOS MÓVIL (2 imágenes con enlace debajo) ===== -->
+    <div class="menu-drawer__mobile-promos">
+    <div class="mobile-promo">
+      <a class="mobile-promo__card" href="{{ settings.mobile_promo_1_href }}">
+        {% if settings.mobile_promo_1_img != blank %}
+          <img class="mobile-promo__img" src="{{ settings.mobile_promo_1_img | image_url }}" alt="{{ settings.mobile_promo_1_label }}">
+        {% endif %}
+        <span class="mobile-promo__caption">{{ settings.mobile_promo_1_label }}</span>
+      </a>
+    </div>
+
+    <div class="mobile-promo">
+      <a class="mobile-promo__card" href="{{ settings.mobile_promo_2_href }}">
+        {% if settings.mobile_promo_2_img != blank %}
+          <img class="mobile-promo__img" src="{{ settings.mobile_promo_2_img | image_url }}" alt="{{ settings.mobile_promo_2_label }}">
+        {% endif %}
+        <span class="mobile-promo__caption">{{ settings.mobile_promo_2_label }}</span>
+      </a>
+    </div>
+  </div>
+  <script>
+  document.addEventListener('DOMContentLoaded', function(){
+    function updateTopClass(){
+      // scroll de la página
+      var atTop = window.scrollY === 0;
+
+      // si el drawer tiene su propio scroll, opcionalmente lo consideramos también
+      var drawer = document.querySelector('.menu-drawer');
+      if (drawer && drawer.offsetParent !== null) {
+        atTop = atTop && drawer.scrollTop === 0;
+        drawer.addEventListener('scroll', function(){
+          document.documentElement.classList.toggle('is-at-top', window.scrollY === 0 && drawer.scrollTop === 0);
+        }, {passive:true});
+      }
+
+      document.documentElement.classList.toggle('is-at-top', atTop);
+    }
+
+    updateTopClass();
+    window.addEventListener('scroll', updateTopClass, {passive:true});
+    window.addEventListener('resize', updateTopClass);
+  });
+  </script>
+
+        <!-- ===== /PROMOS MÓVIL ===== -->
+        <style>
+
+        /* Por defecto (cuando no estamos arriba) */
+        .menu-drawer__sticky-footer-inner{
+          margin-top: 0;
+          transition: margin-top .2s ease;
+        }
+
+        /* Solo cuando el scroll de la web está en 0 */
+        html.is-at-top .menu-drawer__sticky-footer-inner{
+          
+        }
+
+
+         .menu-drawer__mobile-promos{ display:none; padding:.5rem 1rem 0; }
+          @media (max-width: 749px){ .menu-drawer__mobile-promos{ display:block; } }
+
+          .mobile-promo{ margin: .6rem 0; }
+          .mobile-promo__card{ position:relative; display:block; }
+          .mobile-promo__img{
+            width:100%;
+            aspect-ratio: 347 / 150;   /* como tu referencia */
+            object-fit: cover;
+            border-radius: var(--menu-image-border-radius);
+            display:block;
+          }
+          .mobile-promo__caption{
+            position:absolute;
+            left: clamp(12px, 4vw, 18px);
+            bottom: clamp(10px, 3.2vw, 16px);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            font-size: clamp(14px, 3.8vw, 18px);
+            color: #000; /* en tu ref es negro */
+          }
+
+          /* Si aún mantienes el enlace debajo, ocúltalo para que no duplique el texto */
+          .mobile-promo__link{ display:none !important; }
+           /* En móvil */
+          @media (max-width: 749px){
+            .menu-drawer__mobile-promos {
+              display: block;
+              padding: 0 !important; /* ⬅️ fuerza a 0 */
+            }
+            .mobile-promo {
+              margin: 0 !important; /* ⬅️ fuerza a 0 */
+            }
+          }
+
+        </style>
+
+      {% liquid
+        if block.settings.menu_style == 'featured_collections'
+          assign top_level_featured_collections = linklist.links | where: 'type', 'collection_link'
+        endif
+        if block.settings.menu_style == 'featured_products'
+          assign collection_linklist = linklist.links | where: 'type', 'collection_link' | first
+          assign top_level_featured_products = collection_linklist.object.products
+        endif
+      -%}
+      {% if top_level_featured_collections.size > 0 or top_level_featured_products.size > 0 %}
+        <div class="menu-drawer__featured-content" style="--menu-drawer-animation-index: {{ linklist.links.size | plus: 1 }};">
+          <ul class="menu-drawer__featured-content-list menu-drawer__animated-element list-unstyled">
+            {% if top_level_featured_collections.size > 0 %}
+              {%- for collection in top_level_featured_collections limit: max_featured_items -%}
+                <li class="menu-drawer__featured-content-list-item menu-drawer__featured-content-list-item--collection">
+                  {% render 'resource-card', resource: collection.object, resource_type: 'collection', style: 'overlay', image_aspect_ratio: ratio %}
+                </li>
+              {%- endfor -%}
+            {% elsif top_level_featured_products.size > 0 %}
+              {%- for product in top_level_featured_products limit: max_featured_items -%}
+                <li class="menu-drawer__featured-content-list-item menu-drawer__featured-content-list-item--product">
+                  {% render 'resource-card', resource: product, resource_type: 'product', image_aspect_ratio: ratio %}
+                </li>
+              {%- endfor -%}
+            {% endif %}
+          </ul>
+        </div>
+      {% endif %}
+
+      <!-- ===== Footer fijo inferior  ===== -->
+      <nav class="menu-drawer__sticky-footer" aria-label="Enlaces inferiores del menú">
+      <div class="menu-drawer__sticky-footer-inner">
+        {% for link in settings.drawer_quick_tabs_menux.links %}
+          <a class="menu-drawer__sticky-link" href="{{ link.url }}">{{ link.title }}</a>
+        {% endfor %}
+      </div>
+    </nav>
+      <!-- ===== /Footer fijo inferior ===== -->
+    </div>
+
+    <div class="menu-drawer__backdrop" on:click="header-drawer/close"></div>
+  </details>
+</header-drawer>
+
+{% stylesheet %}
+  .header__icon--menu {
+    position: initial;
+  }
+
+  @media screen and (width >= 750px) {
+    .header--desktop header-menu + .header__drawer header-drawer {
+      display: none;
+    }
+  }
+
+  .menu-drawer-container .header__icon--summary {
+    color: var(--color-foreground);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: var(--padding-lg);
+  }
+
+  .header__icon--summary .header-drawer-icon {
+    margin: auto;
+    width: var(--icon-size-xs);
+    height: var(--icon-size-xs);
+  }
+
+  .header__drawer {
+    display: flex;
+    min-height: 60px;
+    align-items: center;
+
+    @media screen and (width >= 750px) {
+      min-height: 0;
+    }
+  }
+
+  .header--compact .header__drawer {
+    min-height: var(--minimum-touch-target);
+  }
+
+  .menu-drawer__navigation {
+    padding: 0;
+
+    @media screen and (width >= 750px) {
+      margin-top: var(--drawer-header-desktop-top);
+    }
+  }
+
+  details:not([open]) .header__icon--menu .header-drawer-icon--close {
+    display: none;
+  }
+
+  details[open] .header__icon--menu .header-drawer-icon--close {
+    @media screen and (width >= 750px) {
+      display: none;
+    }
+  }
+
+  details[open] .header__icon--menu .header-drawer-icon--open {
+    display: none;
+
+    @media screen and (width >= 750px) {
+      display: flex;
+    }
+  }
+
+  .menu-drawer {
+    position: fixed;
+    transform: translateX(-100%);
+    visibility: hidden;
+    height: var(--drawer-height);
+    width: var(--drawer-width);
+    max-width: var(--drawer-max-width);
+    z-index: var(--layer-menu-drawer);
+    left: 0;
+    top: 0;
+    padding: 0;
+    background-color: var(--color-background);
+    overflow: auto;
+    display: flex;
+    border-right: var(--style-border-drawer);
+    box-shadow: var(--shadow-drawer);
+    flex-direction: column;
+
+    @media screen and (width >= 750px) {
+      width: 30rem;
+    }
+
+    .header__drawer--desktop & {
+      height: 100vh;
+    }
+  }
+
+  .menu-drawer:has(details[open]) {
+    overflow: hidden;
+  }
+
+  .menu-drawer__backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100dvh;
+    backdrop-filter: brightness(0.75);
+    z-index: var(--layer-heightened);
+    opacity: 0;
+    transition: opacity var(--drawer-animation-speed) ease;
+
+    .menu-open & {
+      opacity: 1;
+    }
+  }
+
+  .menu-drawer,
+  details[open] > .menu-drawer__submenu {
+    transition: transform var(--drawer-animation-speed) ease, visibility var(--drawer-animation-speed) ease,
+      opacity var(--drawer-animation-speed) ease;
+  }
+
+  .menu-open > .menu-drawer,
+  .menu-open > .menu-drawer__submenu:not(.menu-drawer__menu--childlist) {
+    transform: translateX(0);
+    visibility: visible;
+    opacity: 1;
+    display: flex;
+    flex-direction: column;
+    will-change: transform;
+  }
+
+  .menu-drawer__inner-container {
+    position: relative;
+    height: 100%;
+  }
+
+  .menu-drawer__navigation-container {
+    display: grid;
+    grid-template-rows: 1fr auto;
+    align-content: space-between;
+    overflow-y: auto;
+    height: 100%;
+  }
+
+  .menu-drawer__inner-submenu {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow-y: auto;
+
+    @media screen and (width >= 750px) {
+      margin-top: var(--drawer-header-desktop-top);
+    }
+  }
+
+  .menu-drawer__nav-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .menu-drawer__menu {
+    --menu-drawer-inline-padding: calc(var(--padding-sm) + 7px);
+
+    list-style: none;
+    padding-inline: var(--drawer-padding);
+    margin-inline: 0;
+    margin-block-start: 0;
+  }
+
+  .menu-drawer__menu--grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--padding-sm);
+    padding-inline-end: var(--menu-drawer-inline-padding);
+    padding-block-start: var(--padding-xs);
+  }
+
+  .menu-drawer__menu--childlist:not(.menu-drawer__menu--grid) {
+    flex-grow: 1;
+  }
+
+  .menu-drawer__menu.has-submenu,
+  .menu-drawer__menu--childlist:not(:has(.menu-drawer__animated-element)) {
+    margin-block-end: var(--margin-xs);
+
+    @media screen and (width >= 750px) {
+      margin-block-end: 2.5rem;
+    }
+  }
+
+  .menu-drawer__list-item--divider {
+    border-block-end: 1px solid var(--color-border);
+  }
+
+  .menu-drawer__list-item--deep:not(.menu-drawer__list-item--divider) .menu-drawer__menu {
+    margin-block-start: -0.3rem;
+  }
+
+  .menu-drawer__list-item--flat .menu-drawer__list-item {
+    min-height: auto;
+  }
+
+  .menu-drawer__menu .menu-drawer__list-item--flat {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-block-end: var(--margin-md);
+  }
+
+  .menu-drawer__menu--childlist .menu-drawer__list-item--flat {
+    margin-block-end: var(--margin-sm);
+
+    @media screen and (width >= 750px) {
+      margin-block-end: var(--margin-lg);
+    }
+  }
+
+  .menu-drawer__menu--childlist .menu-drawer__list-item--flat.menu-drawer__list-item--divider {
+    margin-block-end: 0;
+  }
+
+  .menu-drawer__list-item--flat .menu-drawer__menu--grandchildlist {
+    width: 100%;
+    padding-inline-start: 0;
+  }
+
+  .menu-drawer-container[open] .menu-drawer__animated-element {
+    animation: menu-drawer-nav-open var(--drawer-animation-speed) ease-in-out;
+    animation-delay: calc(var(--drawer-animation-speed) + (var(--menu-drawer-animation-index) - 1) * 0.1s);
+    animation-fill-mode: backwards;
+  }
+
+  .menu-drawer__menu details,
+  .menu-drawer__menu-item,
+  .menu-drawer__menu accordion-custom {
+    width: 100%;
+  }
+
+  .menu-drawer__list-item--divider .menu-drawer__menu-item:not(.menu-drawer__menu-item--child) {
+    min-height: calc(2 * var(--padding-lg) + var(--icon-size-xs));
+  }
+
+  .menu-drawer__menu-item--mainlist {
+    min-height: calc(2 * var(--padding-lg) + var(--icon-size-xs));
+    font-family: var(--menu-top-level-font-family);
+    font-style: var(--menu-top-level-font-style);
+    font-weight: var(--menu-top-level-font-weight);
+    font-size: var(--menu-top-level-font-size);
+    line-height: var(--menu-top-level-font-line-height);
+    text-transform: var(--menu-top-level-font-case);
+    color: var(--menu-top-level-font-color);
+    justify-content: space-between;
+
+    &:hover {
+      color: var(--menu-top-level-font-color);
+    }
+  }
+
+  .menu-drawer__menu-item--parent {
+    font-family: var(--menu-parent-font-family);
+    font-style: var(--menu-parent-font-style);
+    font-weight: var(--menu-parent-font-weight);
+    font-size: var(--menu-parent-font-size);
+    line-height: var(--menu-parent-font-line-height);
+    text-transform: var(--menu-parent-font-case);
+    color: var(--menu-parent-font-color);
+
+    &:hover {
+      color: var(--menu-parent-font-color);
+    }
+  }
+
+  .menu-drawer__menu-item--child {
+    font-family: var(--menu-child-font-family);
+    font-style: var(--menu-child-font-style);
+    font-weight: var(--menu-child-font-weight);
+    font-size: var(--menu-child-font-size);
+    line-height: var(--menu-child-font-line-height);
+    text-transform: var(--menu-child-font-case);
+    color: var(--menu-child-font-color);
+
+    &:hover {
+      color: var(--menu-child-font-color);
+    }
+  }
+
+  .menu-drawer__menu--childlist summary.menu-drawer__menu-item {
+    display: flex;
+    width: 100%;
+    padding-inline-end: 0;
+  }
+
+  .menu-drawer__list-item--deep .menu-drawer__menu,
+  .menu-drawer__menu--grandchildlist {
+    padding-inline-start: 0;
+  }
+
+  .menu-drawer__list-item--deep .menu-drawer__menu {
+    padding-block-end: 0.5rem;
+  }
+
+  .menu-drawer__list-item--deep.menu-drawer__list-item--divider .menu-drawer__menu {
+    padding-block-end: 0.3rem;
+  }
+
+  .menu-drawer__list-item--flat.menu-drawer__list-item--divider .menu-drawer__menu--grandchildlist {
+    padding-block-end: 0.5rem;
+  }
+
+  .menu-drawer__menu-item {
+    display: flex;
+    padding: var(--padding-2xs) 0;
+    position: relative;
+    text-decoration: none;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .menu-drawer__menu-item:has(> .menu-drawer__link-image) {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    row-gap: var(--padding-3xs);
+    padding: 0;
+  }
+
+  .menu-drawer__link-image {
+    width: 100%;
+    position: relative;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+  }
+
+  .menu-drawer__close-button {
+    background-color: transparent;
+    color: var(--color-foreground);
+    padding: var(--padding-xl);
+    box-shadow: none;
+    will-change: transform;
+  }
+
+  .menu-drawer__close-button .svg-wrapper,
+  .menu-drawer__close-button svg {
+    width: var(--icon-size-xs);
+    height: var(--icon-size-xs);
+  }
+
+  .menu-drawer__back-button {
+    display: flex;
+    width: 100%;
+    padding: var(--padding-md) var(--padding-xl);
+    border: none;
+    align-items: center;
+    color: var(--color-foreground);
+    background-color: transparent;
+    text-align: left;
+    text-decoration: none;
+    white-space: nowrap;
+    overflow-x: hidden;
+    line-height: 1.2;
+    box-shadow: none;
+  }
+
+  .menu-drawer__menu-item-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /** Styles when the country selector is hidden */
+  .menu-drawer .language-selector:not(.menu-drawer__submenu *) {
+    width: fit-content;
+    padding-inline-start: 0;
+
+    .localization-form__select {
+      text-align: left;
+    }
+  }
+
+  .menu-drawer__menu-item > .svg-wrapper {
+    width: fit-content;
+    height: fit-content;
+    margin: 0;
+    padding-block: var(--padding-lg);
+    padding-inline-start: var(--padding-xl);
+  }
+
+  .menu-drawer__list-item--divider .menu-drawer__menu-item > .svg-wrapper {
+    padding-block: var(--padding-md);
+  }
+
+  .menu-drawer svg {
+    width: var(--icon-size-xs);
+    height: var(--icon-size-xs);
+  }
+
+  .menu-drawer__submenu {
+    position: absolute;
+    width: 100%;
+    top: 0;
+    height: 100dvh;
+    left: 0;
+    background-color: var(--color-background);
+    z-index: var(--layer-flat);
+    transform: translateX(5%);
+    visibility: hidden;
+    overflow-y: auto;
+    opacity: 0;
+  }
+
+  .menu-drawer__back-button > .svg-wrapper {
+    margin-right: var(--padding-md);
+    width: var(--icon-size-xs);
+    height: var(--icon-size-xs);
+  }
+
+  .menu-drawer__utility-links {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    margin-block: auto var(--padding-sm);
+    margin-inline-start: var(--padding-xl);
+    background-color: rgb(var(--color-foreground) 0.03);
+  }
+
+  .menu-drawer__account {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--gap-xs);
+    text-decoration: none;
+    height: 44px;
+    font-size: 1.4rem;
+    color: rgb(var(--color-foreground));
+  }
+
+  .menu-drawer__account svg {
+    height: var(--icon-size-sm);
+    width: var(--icon-size-sm);
+  }
+
+  .menu-drawer__account shop-user-avatar {
+    --shop-avatar-size: 2.4rem;
+
+    margin-right: 0.55rem;
+    margin-left: -0.45rem;
+  }
+
+  .menu-drawer__link-image,
+  .menu-drawer__featured-product-image,
+  .menu-drawer__featured-collection-image,
+  .menu-drawer__featured-collection-link::before {
+    border-radius: var(--menu-image-border-radius);
+  }
+
+  @keyframes menu-drawer-nav-open {
+    0% {
+      visibility: hidden;
+      opacity: 0;
+      transform: translateX(-0.5rem);
+    }
+
+    100% {
+      visibility: visible;
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes menu-drawer-subnav-open {
+    0% {
+      visibility: visible;
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    100% {
+      visibility: hidden;
+      opacity: 0;
+      transform: translateX(-1rem);
+    }
+  }
+
+  /* ====== Footer fijo inferior del drawer (no editable) ====== */
+  .menu-drawer__sticky-footer{
+    position: sticky;
+    bottom: 0;
+    left: 0; right: 0;
+    background: var(--color-background);
+    border-top: 1px solid var(--color-border);
+    z-index: calc(var(--layer-menu-drawer) + 1);
+  }
+
+  .menu-drawer__sticky-footer-inner{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    align-items: center;
+    gap: .25rem;
+  }
+
+  .menu-drawer__sticky-link{
+    display: block;
+    padding: .9rem .75rem;
+    text-align: center;
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    font-size: .78rem;
+    color: rgb(var(--color-foreground));
+    opacity: .9;
+  }
+
+  .menu-drawer__sticky-link:hover{ opacity: 1; }
+
+ 
+  .menu-drawer__tab-panels{ padding-bottom: 64px; }
+  @media (min-width: 750px){
+    .menu-drawer__tab-panels{ padding-bottom: 72px; }
+  }
+
+  @media (max-width: 749px){
+    .menu-drawer__sticky-footer { display: none !important; }
+  }
+
+
+.menu-drawer__sticky-link{
+  white-space: nowrap;
+}
+
+/* ===== Ocultar scrollbars dentro del drawer ===== */
+
+/* Drawer principal */
+.menu-drawer{
+  overflow-y: auto;
+  overflow-x: hidden;         /* oculta barra horizontal */
+  -ms-overflow-style: none;   /* IE/Edge */
+  scrollbar-width: none;      /* Firefox */
+}
+.menu-drawer::-webkit-scrollbar{ /* Chrome/Safari */
+  width: 0;
+  height: 0;
+}
+
+/* Paneles de submenú */
+.menu-drawer__submenu{
+  overflow-y: auto;
+  overflow-x: hidden;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.menu-drawer__submenu::-webkit-scrollbar{
+  width: 0;
+  height: 0;
+}
+
+/* Tabs superiores (evita la barra horizontal visible) */
+.menu-drawer__quick-tabs{
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.menu-drawer__quick-tabs::-webkit-scrollbar{
+  width: 0;
+  height: 0;
+}
+
+.menu-drawer__sticky-link{
+  padding-bottom:0px;
+}
+
+{% endstylesheet %}

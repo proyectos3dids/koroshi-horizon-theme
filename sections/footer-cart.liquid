@@ -1,0 +1,244 @@
+
+{% comment %}
+  Section: Footer Club Strip (3 columnas)
+  - Sin bucles for.
+  - Imágenes sin valor por defecto, siempre con | image_url.
+  - Cada columna tiene un RICHTEXT (links, negritas...) + visibilidad móvil/desktop por CTA.
+{% endcomment %}
+
+<section
+  class="footer-club-strip"
+  style="
+    --fcs-container: {{ section.settings.container_max_width }};
+    --fcs-pad-y: {{ section.settings.padding_y }}px;
+    --fcs-row-bg: {{ section.settings.row_bg }};
+    --fcs-card-bg: {{ section.settings.card_bg }};
+    --fcs-sep-color: {{ section.settings.sep_color }};
+    --fcs-sep-thickness-desktop: {{ section.settings.sep_thickness }}px;
+    --fcs-sep-thickness-mobile: {{ section.settings.sep_thickness_mobile }}px;
+    --fcs-gap-mobile: {{ section.settings.gap_mobile }}px;
+  "
+>
+  <style>
+    #shopify-section-{{ section.id }} .footer-club-strip{background:{{ section.settings.bg }};}
+    #shopify-section-{{ section.id }} .fcs-container{margin:0 auto;padding:var(--fcs-pad-y) 0;}
+    #shopify-section-{{ section.id }} .fcs-band{background:{{ section.settings.header_bg }};color:{{ section.settings.header_color }};padding:10px 16px;}
+    #shopify-section-{{ section.id }} .fcs-band .band-inner{max-width:var(--fcs-container);margin:0 auto;display:flex;align-items:center;justify-content:center;gap:.75rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;}
+    #shopify-section-{{ section.id }} .fcs-band .band-left{font-weight:800;}
+    #shopify-section-{{ section.id }} .fcs-band a{color:{{ section.settings.header_link_color }};text-decoration:underline;}
+
+    /* GRID base (móvil) */
+    #shopify-section-{{ section.id }} .fcs-grid{
+      position:relative;display:grid;grid-template-columns:1fr;
+      gap:var(--fcs-gap-mobile);background:var(--fcs-row-bg);width:100%;box-sizing:border-box;
+    }
+    #shopify-section-{{ section.id }} .fcs-col{
+      position:relative;background:var(--fcs-card-bg);text-align:center;
+      padding:24px 18px;border-radius:{{ section.settings.card_radius }}px;height:100%;box-sizing:border-box;
+    }
+
+    #shopify-section-{{ section.id }} .fcs-icon{margin:0 auto 12px;display:block;width:{{ section.settings.icon_size }}px;height:auto;}
+    #shopify-section-{{ section.id }} .fcs-title{font-weight:800;letter-spacing:.03em;text-transform:uppercase;color:{{ section.settings.title_color }};margin:0 0 8px;font-size:14px;}
+    #shopify-section-{{ section.id }} .fcs-text{color:{{ section.settings.text_color }};font-size:13px;line-height:1.5;margin:0 0 14px;}
+
+    /* Estilos para enlaces dentro del RICHTEXT de las CTAs */
+    #shopify-section-{{ section.id }} .fcs-cta a{
+      font-weight:800;text-transform:uppercase;letter-spacing:.03em;font-size:12px;
+      color:{{ section.settings.link_color }};text-decoration:none;border-bottom:2px solid {{ section.settings.link_underline }};
+      padding-bottom:4px;
+    }
+    #shopify-section-{{ section.id }} .fcs-cta a:hover{
+      color:{{ section.settings.link_color_hover }};border-bottom-color:{{ section.settings.link_underline_hover }};
+    }
+
+    /* Líneas superior/inferior del bloque en móvil */
+    #shopify-section-{{ section.id }} .fcs-grid::before,
+    #shopify-section-{{ section.id }} .fcs-grid::after{
+      content:"";position:absolute;left:0;right:0;height:var(--fcs-sep-thickness-mobile);background:var(--fcs-sep-color);pointer-events:none;
+    }
+    #shopify-section-{{ section.id }} .fcs-grid::before{ top:0; }
+    #shopify-section-{{ section.id }} .fcs-grid::after{ bottom:0; }
+
+    /* Línea separadora entre tarjetas en móvil */
+    @media (max-width: 989px){
+      #shopify-section-{{ section.id }} .fcs-col:not(:first-child)::before{
+        content:"";position:absolute;left:0;right:0;height:var(--fcs-sep-thickness-mobile);background:var(--fcs-sep-color);
+        top:0;transform: translateY(calc(-0.5 * var(--fcs-gap-mobile) - 0.5 * var(--fcs-sep-thickness-mobile)));pointer-events:none;
+      }
+    }
+
+    /* Visibilidad helpers generales */
+    @media (min-width:990px){ #shopify-section-{{ section.id }} .hide-desktop{display:none!important;} }
+    @media (max-width:989px){ #shopify-section-{{ section.id }} .hide-mobile{display:none!important;} }
+
+    /* Desktop: 3 columnas */
+    @media (min-width:990px){
+      #shopify-section-{{ section.id }} .fcs-grid{grid-template-columns:33.333% 33.333% 33.334%;gap:0;}
+      #shopify-section-{{ section.id }} .fcs-col{border-radius:0;padding:28px 24px;}
+      #shopify-section-{{ section.id }} .fcs-col:nth-child(2)::before,
+      #shopify-section-{{ section.id }} .fcs-col:nth-child(3)::before{
+        content:"";position:absolute;left:0;top:0;bottom:0;width:var(--fcs-sep-thickness-desktop);background:var(--fcs-sep-color);pointer-events:none;
+      }
+      #shopify-section-{{ section.id }} .fcs-grid::before,
+      #shopify-section-{{ section.id }} .fcs-grid::after{height:var(--fcs-sep-thickness-desktop);}
+    }
+  </style>
+
+  {%- assign vis_classes = '' -%}
+  {%- unless section.settings.show_on_desktop -%}{% assign vis_classes = vis_classes | append: ' hide-desktop' %}{%- endunless -%}
+  {%- unless section.settings.show_on_mobile -%}{% assign vis_classes = vis_classes | append: ' hide-mobile' %}{%- endunless -%}
+  {%- assign vis_custom = section.settings.visibility_option -%}
+  {%- if vis_custom == 'mobile' -%}{% assign vis_classes = vis_classes | append: ' hide-desktop' %}
+  {%- elsif vis_custom == 'desktop' -%}{% assign vis_classes = vis_classes | append: ' hide-mobile' %}{%- endif -%}
+
+  {%- comment -%} Clases por CTA (móvil/desktop por tarjeta) {%- endcomment -%}
+  {%- assign cta1_vis = '' -%}
+  {%- unless section.settings.cta1_show_desktop -%}{% assign cta1_vis = cta1_vis | append: ' hide-desktop' %}{%- endunless -%}
+  {%- unless section.settings.cta1_show_mobile -%}{% assign cta1_vis = cta1_vis | append: ' hide-mobile' %}{%- endunless -%}
+
+  {%- assign cta2_vis = '' -%}
+  {%- unless section.settings.cta2_show_desktop -%}{% assign cta2_vis = cta2_vis | append: ' hide-desktop' %}{%- endunless -%}
+  {%- unless section.settings.cta2_show_mobile -%}{% assign cta2_vis = cta2_vis | append: ' hide-mobile' %}{%- endunless -%}
+
+  {%- assign cta3_vis = '' -%}
+  {%- unless section.settings.cta3_show_desktop -%}{% assign cta3_vis = cta3_vis | append: ' hide-desktop' %}{%- endunless -%}
+  {%- unless section.settings.cta3_show_mobile -%}{% assign cta3_vis = cta3_vis | append: ' hide-mobile' %}{%- endunless -%}
+
+  <div class="fcs-visibility{{ vis_classes }}">
+
+    {%- if section.settings.show_band -%}
+      <div class="fcs-band">
+        <div class="band-inner">
+          <span class="band-left">{{ section.settings.header_left }}</span>
+          <span class="band-title">{{ section.settings.header_title }}</span>
+          {%- if section.settings.header_link_label != blank and section.settings.header_link_url != blank -%}
+            <a href="{{ section.settings.header_link_url }}" {% if section.settings.header_link_blank %}target="_blank" rel="noopener"{% endif %}>{{ section.settings.header_link_label }}</a>
+          {%- endif -%}
+        </div>
+      </div>
+    {%- endif -%}
+
+    <div class="fcs-container">
+      <div class="fcs-grid">
+
+        <!-- Columna 1 -->
+        <div class="fcs-col">
+          {%- if section.settings.icon1 != blank -%}
+            <img class="fcs-icon" src="{{ section.settings.icon1 | image_url: width: section.settings.icon_size }}" alt="{{ section.settings.icon1_alt | escape }}">
+          {%- endif -%}
+          <h3 class="fcs-title">{{ section.settings.title1 }}</h3>
+          <p class="fcs-text">{{ section.settings.text1 }}</p>
+
+          {%- if section.settings.cta1_richtext != blank -%}
+            <div class="fcs-cta{{ cta1_vis }}">{{ section.settings.cta1_richtext }}</div>
+          {%- endif -%}
+        </div>
+
+        <!-- Columna 2 -->
+        <div class="fcs-col">
+          {%- if section.settings.icon2 != blank -%}
+            <img class="fcs-icon" src="{{ section.settings.icon2 | image_url: width: section.settings.icon_size }}" alt="{{ section.settings.icon2_alt | escape }}">
+          {%- endif -%}
+          <h3 class="fcs-title">{{ section.settings.title2 }}</h3>
+          <p class="fcs-text">{{ section.settings.text2 }}</p>
+
+          {%- if section.settings.cta2_richtext != blank -%}
+            <div class="fcs-cta{{ cta2_vis }}">{{ section.settings.cta2_richtext }}</div>
+          {%- endif -%}
+        </div>
+
+        <!-- Columna 3 -->
+        <div class="fcs-col">
+          {%- if section.settings.icon3 != blank -%}
+            <img class="fcs-icon" src="{{ section.settings.icon3 | image_url: width: section.settings.icon_size }}" alt="{{ section.settings.icon3_alt | escape }}">
+          {%- endif -%}
+          <h3 class="fcs-title">{{ section.settings.title3 }}</h3>
+          <p class="fcs-text">{{ section.settings.text3 }}</p>
+
+          {%- if section.settings.cta3_richtext != blank -%}
+            <div class="fcs-cta{{ cta3_vis }}">{{ section.settings.cta3_richtext }}</div>
+          {%- endif -%}
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Footer — Tira Club",
+  "settings": [
+    { "type": "checkbox", "id": "show_on_desktop", "label": "Mostrar sección en escritorio", "default": true },
+    { "type": "checkbox", "id": "show_on_mobile", "label": "Mostrar sección en móvil", "default": true },
+    { "type": "text", "id": "visibility_option", "label": "Visibilidad global (mobile / desktop / both)", "default": "both" },
+
+    { "type": "text", "id": "container_max_width", "label": "Ancho máximo del contenido", "default": "1200px" },
+    { "type": "range", "id": "padding_y", "label": "Padding vertical", "min": 0, "max": 120, "step": 4, "default": 20 },
+
+    { "type": "color", "id": "bg", "label": "Color de fondo global", "default": "#ffffff" },
+    { "type": "color", "id": "row_bg", "label": "Color de fondo fila (debajo de tarjetas)", "default": "#f2f2f2" },
+    { "type": "color", "id": "card_bg", "label": "Color de fondo tarjetas", "default": "#f2f2f2" },
+    { "type": "range", "id": "card_radius", "label": "Radio de borde tarjetas (px)", "min": 0, "max": 24, "step": 1, "default": 8 },
+
+    { "type": "header", "content": "Separadores / Gaps" },
+    { "type": "color", "id": "sep_color", "label": "Color separador", "default": "#e5e5e5" },
+    { "type": "range", "id": "sep_thickness", "label": "Grosor separador (desktop, px)", "min": 0, "max": 12, "step": 1, "default": 1 },
+    { "type": "range", "id": "sep_thickness_mobile", "label": "Grosor separador (móvil, px)", "min": 0, "max": 12, "step": 1, "default": 1 },
+    { "type": "range", "id": "gap_mobile", "label": "Separación en móvil (px)", "min": 0, "max": 36, "step": 1, "default": 14 },
+
+    { "type": "header", "content": "Banda superior" },
+    { "type": "checkbox", "id": "show_band", "label": "Mostrar banda", "default": true },
+    { "type": "text", "id": "header_left", "label": "Texto izquierdo (ej. K)", "default": "K" },
+    { "type": "text", "id": "header_title", "label": "Título banda", "default": "ÚNETE A KOROSHI CLUB" },
+    { "type": "text", "id": "header_link_label", "label": "Texto enlace de la banda", "default": "KOROSHI CLUB" },
+    { "type": "url", "id": "header_link_url", "label": "URL enlace de la banda" },
+    { "type": "checkbox", "id": "header_link_blank", "label": "Abrir enlace en nueva pestaña", "default": false },
+    { "type": "color", "id": "header_bg", "label": "Color fondo banda", "default": "#000000" },
+    { "type": "color", "id": "header_color", "label": "Color texto banda", "default": "#ffffff" },
+    { "type": "color", "id": "header_link_color", "label": "Color enlace banda", "default": "#ffffff" },
+
+    { "type": "header", "content": "Estilos de contenido" },
+    { "type": "color", "id": "title_color", "label": "Color títulos", "default": "#000000" },
+    { "type": "color", "id": "text_color", "label": "Color texto", "default": "#000000" },
+
+    { "type": "header", "content": "Estilos de enlaces (richtext CTA)" },
+    { "type": "color", "id": "link_color", "label": "CTA enlace — color", "default": "#000000" },
+    { "type": "color", "id": "link_underline", "label": "CTA enlace — subrayado", "default": "#000000" },
+    { "type": "color", "id": "link_color_hover", "label": "CTA enlace — color hover", "default": "#222222" },
+    { "type": "color", "id": "link_underline_hover", "label": "CTA enlace — subrayado hover", "default": "#222222" },
+
+    { "type": "range", "id": "icon_size", "label": "Tamaño del icono (px)", "min": 16, "max": 96, "step": 2, "default": 28 },
+
+    { "type": "header", "content": "Columna 1" },
+    { "type": "image_picker", "id": "icon1", "label": "Icono 1 (sin valor por defecto)" },
+    { "type": "text", "id": "icon1_alt", "label": "Alt del icono 1" },
+    { "type": "text", "id": "title1", "label": "Título 1", "default": "DESCARGA NUESTRA APP" },
+    { "type": "textarea", "id": "text1", "label": "Texto 1", "default": "Descarga nuestra APP para ahorrar tiempo, descubrir las últimas tendencias y obtener recomendaciones personalizadas, todo en un solo lugar." },
+    { "type": "richtext", "id": "cta1_richtext", "label": "CTA 1 — Rich text (puedes poner enlace, negrita, etc.)" },
+    { "type": "checkbox", "id": "cta1_show_mobile", "label": "Mostrar CTA 1 en móvil", "default": true },
+    { "type": "checkbox", "id": "cta1_show_desktop", "label": "Mostrar CTA 1 en desktop", "default": true },
+
+    { "type": "header", "content": "Columna 2" },
+    { "type": "image_picker", "id": "icon2", "label": "Icono 2 (sin valor por defecto)" },
+    { "type": "text", "id": "icon2_alt", "label": "Alt del icono 2" },
+    { "type": "text", "id": "title2", "label": "Título 2", "default": "KOROSHI CLUB" },
+    { "type": "textarea", "id": "text2", "label": "Texto 2", "default": "Recompensas exclusivas, experiencias únicas y beneficios que te acompañan siempre." },
+    { "type": "richtext", "id": "cta2_richtext", "label": "CTA 2 — Rich text (puedes poner enlace, negrita, etc.)" },
+    { "type": "checkbox", "id": "cta2_show_mobile", "label": "Mostrar CTA 2 en móvil", "default": true },
+    { "type": "checkbox", "id": "cta2_show_desktop", "label": "Mostrar CTA 2 en desktop", "default": true },
+
+    { "type": "header", "content": "Columna 3" },
+    { "type": "image_picker", "id": "icon3", "label": "Icono 3 (sin valor por defecto)" },
+    { "type": "text", "id": "icon3_alt", "label": "Alt del icono 3" },
+    { "type": "text", "id": "title3", "label": "Título 3", "default": "KOROSHI STORES" },
+    { "type": "textarea", "id": "text3", "label": "Texto 3", "default": "Siempre cerca de ti. Encuentra tu tienda más próxima y vive la experiencia Koroshi." },
+    { "type": "richtext", "id": "cta3_richtext", "label": "CTA 3 — Rich text (puedes poner enlace, negrita, etc.)" },
+    { "type": "checkbox", "id": "cta3_show_mobile", "label": "Mostrar CTA 3 en móvil", "default": true },
+    { "type": "checkbox", "id": "cta3_show_desktop", "label": "Mostrar CTA 3 en desktop", "default": true }
+  ],
+  "presets": [
+    { "name": "Footer — Tira Club", "category": "Footer" }
+  ]
+}
+{% endschema %}

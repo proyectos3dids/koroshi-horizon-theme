@@ -1,0 +1,221 @@
+{%- comment -%}
+  Snippet: popup-locale-currency-duo
+  Dos triggers en línea:
+    • Idioma  → idioma ACTUAL (endónimo)
+    • Moneda  → código + símbolo (p.ej. EUR €)
+  Cada trigger abre su propio popup centrado.
+{%- endcomment -%}
+
+{%- assign _label_lang = localization.locale.endonym_name | strip | default: localization.language.endonym_name | default: 'Idioma' -%}
+{%- assign _label_curr = localization.country.currency.iso_code | append: ' ' | append: localization.country.currency.symbol -%}
+
+<div class="lcduo"
+     data-lang="{{ _label_lang }}"
+     data-curr="{{ _label_curr }}">
+  <button type="button" class="lcduo-trigger" data-target="lang" aria-haspopup="dialog" aria-expanded="false">
+    <span class="lcduo-text">{{ _label_lang }}</span>
+    <span class="lcduo-caret" aria-hidden="true">▾</span>
+  </button>
+  <button type="button" class="lcduo-trigger" data-target="curr" aria-haspopup="dialog" aria-expanded="false">
+    <span class="lcduo-text">{{ _label_curr }}</span>
+    <span class="lcduo-caret" aria-hidden="true">▾</span>
+  </button>
+</div>
+
+<!-- Overlays separados -->
+<div class="lcduo-overlay" id="lcduo-overlay-lang" hidden></div>
+<div class="lcduo-overlay" id="lcduo-overlay-curr" hidden></div>
+
+<!-- MODAL: Idioma -->
+<div class="lcduo-modal" id="lcduo-modal-lang" role="dialog" aria-modal="true" aria-labelledby="lcduo-title-lang" hidden>
+  <div class="lcduo-card" role="document">
+    <button class="lcduo-close" type="button" aria-label="Cerrar" data-close>&times;</button>
+    <h2 id="lcduo-title-lang" class="lcduo-title">Idioma</h2>
+
+    {%- form 'localization', id: 'lcduo-form-lang' -%}
+      <div class="lcduo-field">
+        <label for="lcduo-locale" class="lcduo-label">Selecciona idioma</label>
+        <select id="lcduo-locale" name="locale_code" class="lcduo-select">
+          {%- for loc in shop.published_locales -%}
+            <option value="{{ loc.iso_code }}"
+              {%- if loc.iso_code == localization.locale.iso_code -%} selected{%- endif -%}>
+              {{ loc.endonym_name }}
+            </option>
+          {%- endfor -%}
+        </select>
+      </div>
+      <div class="lcduo-actions">
+        <button type="submit" class="lcduo-submit">Guardar</button>
+      </div>
+    {%- endform -%}
+  </div>
+</div>
+
+<!-- MODAL: Moneda / País -->
+<div class="lcduo-modal" id="lcduo-modal-curr" role="dialog" aria-modal="true" aria-labelledby="lcduo-title-curr" hidden>
+  <div class="lcduo-card" role="document">
+    <button class="lcduo-close" type="button" aria-label="Cerrar" data-close>&times;</button>
+    <h2 id="lcduo-title-curr" class="lcduo-title">País / Moneda</h2>
+
+    {%- form 'localization', id: 'lcduo-form-curr' -%}
+      <div class="lcduo-field">
+        <label for="lcduo-country" class="lcduo-label">Selecciona país / moneda</label>
+        <select id="lcduo-country" name="country_code" class="lcduo-select">
+          {%- for c in localization.available_countries -%}
+            <option value="{{ c.iso_code }}"
+              {%- if c.iso_code == localization.country.iso_code -%} selected{%- endif -%}>
+              {{ c.name }} — {{ c.currency.iso_code }} {{ c.currency.symbol }}
+            </option>
+          {%- endfor -%}
+        </select>
+      </div>
+      <div class="lcduo-actions">
+        <button type="submit" class="lcduo-submit">Guardar</button>
+      </div>
+    {%- endform -%}
+  </div>
+</div>
+
+<style>
+  /* Disposición exacta: Idioma (izq) · Moneda (der) */
+  .lcduo{
+    display:inline-flex !important;
+    flex-direction:row !important;
+    align-items:center;
+    gap:12px;
+    white-space:nowrap;
+    direction:ltr;
+  }
+  .lcduo-trigger{
+    display:inline-flex !important;
+    align-items:center;
+    gap:6px;
+    appearance:none; background:transparent; border:0; padding:0; margin:0;
+    font:inherit; color:#111; cursor:pointer;
+  }
+  .lcduo-trigger[data-target="lang"]{ order:1; }
+  .lcduo-trigger[data-target="curr"]{ order:2; }
+
+  /* Evita que el tema oculte el texto */
+  .lcduo-trigger .lcduo-text{
+    display:inline !important;
+    text-indent:0 !important;
+    font-size:inherit !important;
+    line-height:inherit !important;
+    overflow:visible !important;
+    visibility:visible !important;
+    opacity:1 !important;
+  }
+  .lcduo-trigger .lcduo-caret{ display:inline-block; }
+
+  /* Overlays/Modals: ocultos no bloquean */
+  .lcduo-overlay[hidden],
+  .lcduo-modal[hidden]{ display:none !important; pointer-events:none !important; }
+  .lcduo-overlay{ position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:9998; }
+
+  .lcduo-modal{ position:fixed; inset:0; display:grid; place-items:center; z-index:9999; }
+  .lcduo-card{
+    position:relative; width:min(92vw,520px); background:#fff;
+    box-shadow:0 20px 60px rgba(0,0,0,.15);
+    padding:20px; transform:translateY(8px); opacity:0; transition:.2s;
+    border-radius:0 !important; /* sin border-radius */
+  }
+  .lcduo-modal[aria-hidden="false"] .lcduo-card{ transform:translateY(0); opacity:1; }
+
+  /* Controles sin border-radius */
+  .lcduo-select, .lcduo-submit{ border-radius:0 !important; }
+
+  .lcduo-title{ margin:0 0 .5rem 0; font-size:1.25rem; }
+  .lcduo-close{ position:absolute; right:10px; top:10px; background:transparent; border:0; font-size:1.6rem; line-height:1; cursor:pointer; }
+  .lcduo-field{ margin:.75rem 0; }
+  .lcduo-label{ display:block; font-size:.9rem; margin-bottom:.25rem; }
+  .lcduo-select{ width:100%; padding:.65rem .8rem; border:1px solid #ddd; background:#fff; }
+  .lcduo-actions{ display:flex; justify-content:flex-end; margin-top:1rem; }
+  .lcduo-submit{ padding:.7rem 1rem; border:1px solid #111; background:#111; color:#fff; cursor:pointer; }
+</style>
+
+<script>
+  (function(){
+    function setTriggerText(kind, text){
+      var node = document.querySelector('.lcduo-trigger[data-target="'+kind+'"] .lcduo-text');
+      if(node){ node.textContent = text; }
+    }
+
+    function syncFromDataset(){
+      var root = document.querySelector('.lcduo');
+      if(!root) return;
+      var lang = root.getAttribute('data-lang');
+      var curr = root.getAttribute('data-curr');
+      if(lang) setTriggerText('lang', lang);
+      if(curr) setTriggerText('curr', curr);
+    }
+
+    function wireLiveUpdates(){
+      // Idioma
+      var selLang = document.getElementById('lcduo-locale');
+      if(selLang){
+        selLang.addEventListener('change', function(){
+          var opt = selLang.options[selLang.selectedIndex];
+          setTriggerText('lang', opt ? opt.text.trim() : selLang.value);
+        });
+      }
+      // Moneda/País
+      var selCurr = document.getElementById('lcduo-country');
+      if(selCurr){
+        selCurr.addEventListener('change', function(){
+          var opt = selCurr.options[selCurr.selectedIndex];
+          if(opt){
+            var m = opt.text.match(/—\s*([A-Z]{3})\s*(.+)$/);
+            setTriggerText('curr', m ? (m[1] + ' ' + m[2]) : selCurr.value);
+          }
+        });
+      }
+    }
+
+    function setup(kind){
+      var trigger = document.querySelector('.lcduo-trigger[data-target="'+kind+'"]');
+      var overlay = document.getElementById('lcduo-overlay-'+kind);
+      var modal   = document.getElementById('lcduo-modal-'+kind);
+      if(!trigger || !overlay || !modal) return;
+
+      var card = modal.querySelector('.lcduo-card');
+      var closeBtn = modal.querySelector('[data-close]');
+      var title = modal.querySelector('.lcduo-title');
+      var lastFocused = null;
+
+      overlay.hidden = true; modal.hidden = true; modal.setAttribute('aria-hidden','true'); trigger.setAttribute('aria-expanded','false');
+
+      function open(){
+        lastFocused = document.activeElement;
+        overlay.hidden = false; modal.hidden = false; modal.setAttribute('aria-hidden','false'); trigger.setAttribute('aria-expanded','true');
+        if(title){ title.setAttribute('tabindex','-1'); title.focus(); }
+        document.addEventListener('keydown', onKey);
+        overlay.addEventListener('click', close);
+      }
+      function close(){
+        overlay.hidden = true; modal.hidden = true; modal.setAttribute('aria-hidden','true'); trigger.setAttribute('aria-expanded','false');
+        document.removeEventListener('keydown', onKey);
+        overlay.removeEventListener('click', close);
+        if(lastFocused && lastFocused.focus) lastFocused.focus();
+      }
+      function onKey(e){
+        if(e.key === 'Escape'){ close(); }
+        if(e.key === 'Tab'){
+          var focusables = card.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+          if(!focusables.length) return;
+          var first = focusables[0], last = focusables[focusables.length - 1];
+          if(e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
+          else if(!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
+        }
+      }
+      trigger.addEventListener('click', open);
+      if(closeBtn) closeBtn.addEventListener('click', close);
+    }
+
+    // Inicializa
+    syncFromDataset();     // pone "Español" y "EUR €" activos al cargar
+    wireLiveUpdates();     // actualiza el texto de los botones cuando cambian los selects
+    setup('lang');
+    setup('curr');
+  })();
+</script>
