@@ -1,11 +1,26 @@
 
-{% render 'button', link: block.settings.link %}
+{% render 'button', link: block.settings.link, block: block %}
+
 
 {% schema %}
 {
   "name": "t:names.button",
   "tag": null,
   "settings": [
+
+    {
+      "type": "checkbox",
+      "id": "bold_text",
+      "label": "t:settings.bold_text",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_icon",
+      "label": "t:settings.show_icon",
+      "default": false
+    }
+    ,
     {
       "type": "text",
       "id": "label",
