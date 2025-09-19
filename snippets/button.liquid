@@ -36,32 +36,43 @@
 </a>
 
 <style>
-  /* Mantener estilos de link */
+  /* Enlaces tipo "link" */
   .link{ text-decoration:none; text-decoration-color:currentcolor; }
   .link:hover{ color:var(--color-primary-hover); text-decoration-color:transparent; }
 
-  /* CENTRADO DEL CONTENIDO (con o sin icono) */
+  /* Tamaño de fuente controlado por settings, acotado solo a este botón */
+  @media screen and (min-width: 750px){
+    .{{ block_settings.style_class }}--{{ block.id }}{
+      font-size: {{ block_settings.font_size_desktop | default: 16 }}px;
+    }
+  }
+  @media screen and (max-width: 749px){
+    .{{ block_settings.style_class }}--{{ block.id }}{
+      font-size: {{ block_settings.font_size_mobile | default: block_settings.font_size_desktop | default: 16 }}px;
+    }
+  }
+
+  /* Centrado del contenido (con o sin icono) */
   .size-style{
-    display:inline-flex;          /* no rompe layout existente */
+    display:inline-flex;
     align-items:center;
-    justify-content:center;       /* centra texto + icono dentro del botón */
+    justify-content:center;
     vertical-align:middle;
-    text-align:center;            /* fallback si el botón creciera a 100% */
+    text-align:center;
   }
 
   .is-bold{ font-weight:700; }
 
   /* Icono opcional */
-  .has-icon{ gap:.5rem; }         /* solo añade separación cuando hay icono */
-
+  .has-icon{ gap:.5rem; }
   .has-icon .button__icon{
     display:inline-block;
-    width:1em; height:1em;        /* mismo alto que el texto */
+    width:1em; height:1em;
     background-image:var(--icon-url);
     background-repeat:no-repeat;
     background-size:contain;
     background-position:center;
-    flex:0 0 1em;                 /* evita que desplace el texto */
+    flex:0 0 1em;
   }
   .has-icon:hover .button__icon{
     background-image:var(--icon-url-hover);
