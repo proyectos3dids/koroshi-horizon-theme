@@ -4,8 +4,9 @@
   assign max_items = section.settings.max_products
 %}
 
-<div id="{{ section.settings.unique_id | escape }}" class="section-background color-{{ section.settings.color_scheme }}"></div>
+<div class="section-background color-{{ section.settings.color_scheme }}"></div>
 <div
+  id="{{ section.settings.unique_id | escape }}"
   class="
     section
     section--{{ section.settings.section_width }}
