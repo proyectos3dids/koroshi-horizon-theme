@@ -109,7 +109,7 @@
         "text_fh6YX3",
         "button_DcwYiJ"
       ],
-      "name": "Hero Movil1",
+      "name": "Hero Mobile1",
       "settings": {
         "media_type_1": "video",
         "image_1": "shopify://shop_images/2522VS05_000323_49573_banner_1.jpg",
@@ -241,7 +241,7 @@
         "text_tYTcFd",
         "button_TN9epf"
       ],
-      "name": "Hero Movil2",
+      "name": "Hero Mobile2",
       "settings": {
         "media_type_1": "image",
         "image_1": "shopify://shop_images/paula22223022.png",
@@ -372,7 +372,7 @@
         "text_CMTFrB",
         "button_t6m3Gh"
       ],
-      "name": "Hero Movil3",
+      "name": "Hero Mobile",
       "settings": {
         "media_type_1": "image",
         "image_1": "shopify://shop_images/Frame_5_689f3c61-355d-47cc-9687-7f4ec3502e84.png",
@@ -1032,8 +1032,8 @@
     "hero_YXEXTA",
     "hero_PYPCJM",
     "hero_t3kNFy",
-    "hero_jVaWmY",
     "section_wNWh4x",
+    "hero_jVaWmY",
     "product_list_qU3bEB"
   ]
 }
