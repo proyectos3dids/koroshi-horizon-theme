@@ -1,7 +1,8 @@
 {% comment %}
   Tira categorías (inputs) — sin puntos, subrayado al hacer clic,
-  y toggle de carruseles por ID (display none / show).
-  Fix: al mostrar, se usa !important y se respeta el display original.
+  y toggle de carruseles por ID.
+  Requisito: ocultar por defecto vía JS (display:none) y al seleccionar quitar ese "none"
+  (no se añade block, solo se elimina la propiedad inline).
 {% endcomment %}
 
 {% assign S = section.settings %}
@@ -65,19 +66,6 @@
 
   /* Enfoque accesible */
   #catstrip-{{ section.id }} .link:focus{ outline:2px solid var(--accent); outline-offset:2px; }
-</style>
-
-{%- comment -%}
-  CSS para ocultar por defecto los carruseles indicados (sin '#').
-  Usamos !important para ganar a estilos del tema.
-  Nota: no usamos | escape para no romper el selector (#id).
-{%- endcomment -%}
-<style id="catstrip-hide-ids-{{ section.id }}">
-  {% if S.i1_target_id != blank %}#{{ S.i1_target_id | strip }}{display:none !important;} {% endif %}
-  {% if S.i2_target_id != blank %}#{{ S.i2_target_id | strip }}{display:none !important;} {% endif %}
-  {% if S.i3_target_id != blank %}#{{ S.i3_target_id | strip }}{display:none !important;} {% endif %}
-  {% if S.i4_target_id != blank %}#{{ S.i4_target_id | strip }}{display:none !important;} {% endif %}
-  {% if S.i5_target_id != blank %}#{{ S.i5_target_id | strip }}{display:none !important;} {% endif %}
 </style>
 
 <section id="catstrip-{{ section.id }}" class="category-strip-simple 3didsprime-strip">
@@ -172,38 +160,25 @@
       "{{ S.i5_target_id | escape }}"
     ].filter(function(id){ return id && id.trim().length > 0; });
 
-    // Guardamos el display original de cada target (para restaurarlo al mostrar)
-    var originalDisplays = {};
-    targets.forEach(function(id){
-      var el = document.getElementById(id);
-      if(!el) return;
-      var cs = window.getComputedStyle(el).display;
-      // si está 'none', asumimos 'block' como valor razonable
-      originalDisplays[id] = (cs && cs !== 'none') ? cs : 'block';
-    });
-
     function hideAll(){
       targets.forEach(function(id){
         var el = document.getElementById(id);
         if(el){
-          // ocultamos con prioridad
-          el.style.setProperty('display', 'none', 'important');
+          el.style.display = 'none'; // poner none por defecto
         }
       });
     }
     function showOne(id){
       var el = document.getElementById(id);
       if(el){
-        var disp = originalDisplays[id] || 'block';
-        // mostramos con prioridad para ganar al CSS !important
-        el.style.setProperty('display', disp, 'important');
+        el.style.removeProperty('display'); // quitar el 'none' inline
       }
     }
     function clearActive(){
       items.forEach(function(li){ li.classList.remove('is-active'); });
     }
 
-    // Al cargar: ocultar todo SIEMPRE, luego mostrar el activo por defecto si existe
+    // Al cargar: ocultar todos y mostrar el activo por defecto (si existe)
     hideAll();
     var defaultIndex = {{ S.default_active | default: 1 }}; // 1..5
     var defaultItem = items[defaultIndex - 1];
@@ -219,9 +194,9 @@
         if(!li) return;
         var targetId = li.getAttribute('data-target');
         if(targetId){
-          e.preventDefault(); // control de toggle
+          e.preventDefault(); // control del toggle
           hideAll();
-          showOne(targetId);
+          showOne(targetId);  // solo quitamos el none
           clearActive();
           li.classList.add('is-active');
         }
