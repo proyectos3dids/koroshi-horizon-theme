@@ -100,7 +100,7 @@
             "width": "custom",
             "custom_width": 30,
             "width_mobile": "custom",
-            "custom_width_mobile": 100
+            "custom_width_mobile": 90
           },
           "blocks": {}
         }
@@ -234,7 +234,7 @@
             "width": "custom",
             "custom_width": 30,
             "width_mobile": "custom",
-            "custom_width_mobile": 100
+            "custom_width_mobile": 90
           },
           "blocks": {}
         }
@@ -367,7 +367,7 @@
             "width": "custom",
             "custom_width": 30,
             "width_mobile": "custom",
-            "custom_width_mobile": 100
+            "custom_width_mobile": 90
           },
           "blocks": {}
         }
