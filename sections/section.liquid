@@ -1,25 +1,34 @@
-
-
 {% capture children %}
   {% content_for 'blocks' %}
 {% endcapture %}
 
-{% render 'section', section: section, children: children %}
+<div class="visibility visibility--{{ section.settings.visibility }}">
+  {% render 'section', section: section, children: children %}
+</div>
+
+{% stylesheet %}
+  /* Visibilidad por dispositivo */
+  .visibility--all { display: block; }
+
+  .visibility--mobile { display: block; }
+  @media screen and (min-width: 750px) {
+    .visibility--mobile { display: none; }
+  }
+
+  .visibility--desktop { display: none; }
+  @media screen and (min-width: 750px) {
+    .visibility--desktop { display: block; }
+  }
+{% endstylesheet %}
 
 {% schema %}
 {
   "name": "t:names.section",
   "class": "section-wrapper",
   "blocks": [
-    {
-      "type": "@theme"
-    },
-    {
-      "type": "@app"
-    },
-    {
-      "type": "_divider"
-    }
+    { "type": "@theme" },
+    { "type": "@app" },
+    { "type": "_divider" }
   ],
   "disabled_on": {
     "groups": ["header"]
@@ -34,14 +43,8 @@
       "id": "content_direction",
       "label": "t:settings.direction",
       "options": [
-        {
-          "value": "column",
-          "label": "t:options.vertical"
-        },
-        {
-          "value": "row",
-          "label": "t:options.horizontal"
-        }
+        { "value": "column", "label": "t:options.vertical" },
+        { "value": "row", "label": "t:options.horizontal" }
       ],
       "default": "column"
     },
@@ -57,22 +60,10 @@
       "id": "horizontal_alignment",
       "label": "t:settings.alignment",
       "options": [
-        {
-          "value": "flex-start",
-          "label": "t:options.left"
-        },
-        {
-          "value": "center",
-          "label": "t:options.center"
-        },
-        {
-          "value": "flex-end",
-          "label": "t:options.right"
-        },
-        {
-          "value": "space-between",
-          "label": "t:options.space_between"
-        }
+        { "value": "flex-start", "label": "t:options.left" },
+        { "value": "center", "label": "t:options.center" },
+        { "value": "flex-end", "label": "t:options.right" },
+        { "value": "space-between", "label": "t:options.space_between" }
       ],
       "default": "flex-start",
       "visible_if": "{{ section.settings.content_direction == 'row' }}"
@@ -82,18 +73,9 @@
       "id": "vertical_alignment",
       "label": "t:settings.position",
       "options": [
-        {
-          "value": "flex-start",
-          "label": "t:options.top"
-        },
-        {
-          "value": "center",
-          "label": "t:options.center"
-        },
-        {
-          "value": "flex-end",
-          "label": "t:options.bottom"
-        }
+        { "value": "flex-start", "label": "t:options.top" },
+        { "value": "center", "label": "t:options.center" },
+        { "value": "flex-end", "label": "t:options.bottom" }
       ],
       "default": "center",
       "visible_if": "{{ section.settings.content_direction == 'row' }}"
@@ -110,18 +92,9 @@
       "id": "horizontal_alignment_flex_direction_column",
       "label": "t:settings.alignment",
       "options": [
-        {
-          "value": "flex-start",
-          "label": "t:options.left"
-        },
-        {
-          "value": "center",
-          "label": "t:options.center"
-        },
-        {
-          "value": "flex-end",
-          "label": "t:options.right"
-        }
+        { "value": "flex-start", "label": "t:options.left" },
+        { "value": "center", "label": "t:options.center" },
+        { "value": "flex-end", "label": "t:options.right" }
       ],
       "default": "flex-start",
       "visible_if": "{{ section.settings.content_direction != 'row' }}"
@@ -131,22 +104,10 @@
       "id": "vertical_alignment_flex_direction_column",
       "label": "t:settings.position",
       "options": [
-        {
-          "value": "flex-start",
-          "label": "t:options.top"
-        },
-        {
-          "value": "center",
-          "label": "t:options.center"
-        },
-        {
-          "value": "flex-end",
-          "label": "t:options.bottom"
-        },
-        {
-          "value": "space-between",
-          "label": "t:options.space_between"
-        }
+        { "value": "flex-start", "label": "t:options.top" },
+        { "value": "center", "label": "t:options.center" },
+        { "value": "flex-end", "label": "t:options.bottom" },
+        { "value": "space-between", "label": "t:options.space_between" }
       ],
       "default": "center",
       "visible_if": "{{ section.settings.content_direction == 'column' }}"
@@ -170,14 +131,8 @@
       "id": "section_width",
       "label": "t:settings.width",
       "options": [
-        {
-          "value": "page-width",
-          "label": "t:options.page"
-        },
-        {
-          "value": "full-width",
-          "label": "t:options.full"
-        }
+        { "value": "page-width", "label": "t:options.page" },
+        { "value": "full-width", "label": "t:options.full" }
       ],
       "default": "page-width"
     },
@@ -186,30 +141,12 @@
       "id": "section_height",
       "label": "t:settings.height",
       "options": [
-        {
-          "value": "",
-          "label": "t:options.auto"
-        },
-        {
-          "value": "small",
-          "label": "t:options.small"
-        },
-        {
-          "value": "medium",
-          "label": "t:options.medium"
-        },
-        {
-          "value": "large",
-          "label": "t:options.large"
-        },
-        {
-          "value": "full-screen",
-          "label": "t:options.full_screen"
-        },
-        {
-          "value": "custom",
-          "label": "t:options.custom"
-        }
+        { "value": "", "label": "t:options.auto" },
+        { "value": "small", "label": "t:options.small" },
+        { "value": "medium", "label": "t:options.medium" },
+        { "value": "large", "label": "t:options.large" },
+        { "value": "full-screen", "label": "t:options.full_screen" },
+        { "value": "custom", "label": "t:options.custom" }
       ],
       "default": ""
     },
@@ -239,18 +176,9 @@
       "id": "background_media",
       "label": "t:settings.background_media",
       "options": [
-        {
-          "value": "none",
-          "label": "t:options.none"
-        },
-        {
-          "value": "image",
-          "label": "t:options.image"
-        },
-        {
-          "value": "video",
-          "label": "t:options.video"
-        }
+        { "value": "none", "label": "t:options.none" },
+        { "value": "image", "label": "t:options.image" },
+        { "value": "video", "label": "t:options.video" }
       ],
       "default": "none"
     },
@@ -265,14 +193,8 @@
       "id": "video_position",
       "label": "t:settings.video_position",
       "options": [
-        {
-          "value": "cover",
-          "label": "t:options.cover"
-        },
-        {
-          "value": "contain",
-          "label": "t:options.contain"
-        }
+        { "value": "cover", "label": "t:options.cover" },
+        { "value": "contain", "label": "t:options.contain" }
       ],
       "default": "cover",
       "visible_if": "{{ section.settings.background_media == 'video' }}"
@@ -288,14 +210,8 @@
       "id": "background_image_position",
       "label": "t:settings.image_position",
       "options": [
-        {
-          "value": "cover",
-          "label": "t:options.cover"
-        },
-        {
-          "value": "fit",
-          "label": "t:options.fit"
-        }
+        { "value": "cover", "label": "t:options.cover" },
+        { "value": "fit", "label": "t:options.fit" }
       ],
       "default": "cover",
       "visible_if": "{{ section.settings.background_media == 'image' }}"
@@ -305,14 +221,8 @@
       "id": "border",
       "label": "t:settings.borders",
       "options": [
-        {
-          "value": "none",
-          "label": "t:options.none"
-        },
-        {
-          "value": "solid",
-          "label": "t:options.solid"
-        }
+        { "value": "none", "label": "t:options.none" },
+        { "value": "solid", "label": "t:options.solid" }
       ],
       "default": "none"
     },
@@ -366,14 +276,8 @@
       "id": "overlay_style",
       "label": "t:settings.overlay_style",
       "options": [
-        {
-          "value": "solid",
-          "label": "t:options.solid"
-        },
-        {
-          "value": "gradient",
-          "label": "t:options.gradient"
-        }
+        { "value": "solid", "label": "t:options.solid" },
+        { "value": "gradient", "label": "t:options.gradient" }
       ],
       "default": "solid",
       "visible_if": "{{ section.settings.toggle_overlay }}"
@@ -383,14 +287,8 @@
       "id": "gradient_direction",
       "label": "t:settings.gradient_direction",
       "options": [
-        {
-          "value": "to top",
-          "label": "t:options.up"
-        },
-        {
-          "value": "to bottom",
-          "label": "t:options.down"
-        }
+        { "value": "to top", "label": "t:options.up" },
+        { "value": "to bottom", "label": "t:options.down" }
       ],
       "default": "to top",
       "visible_if": "{{ section.settings.toggle_overlay and section.settings.overlay_style == 'gradient' }}"
@@ -418,6 +316,23 @@
       "step": 1,
       "unit": "px",
       "default": 0
+    },
+
+    /* ---------- NUEVO: Visibilidad ---------- */
+    {
+      "type": "header",
+      "content": "t:content.visibility"
+    },
+    {
+      "type": "select",
+      "id": "visibility",
+      "label": "t:settings.visibility",
+      "options": [
+        { "value": "all", "label": "t:options.all_devices" },
+        { "value": "mobile", "label": "t:options.mobile_only" },
+        { "value": "desktop", "label": "t:options.desktop_only" }
+      ],
+      "default": "all"
     }
   ],
   "presets": [
@@ -1245,30 +1160,9 @@
             "padding-inline-end": 40
           },
           "blocks": {
-            "spacer": {
-              "type": "spacer",
-              "settings": {
-                "size": "pixel",
-                "pixel_size": 16
-              }
-            },
-            "text_1": {
-              "type": "text",
-              "settings": {
-                "text": "<h3>New arrivals</h3>",
-                "type_preset": "h3",
-                "width": "fit-content",
-                "alignment": "center"
-              }
-            },
-            "button": {
-              "type": "button",
-              "settings": {
-                "label": "Shop now",
-                "link": "shopify://collections/all",
-                "style_class": "link"
-              }
-            }
+            "spacer": { "type": "spacer", "settings": { "size": "pixel", "pixel_size": 16 } },
+            "text_1": { "type": "text", "settings": { "text": "<h3>New arrivals</h3>", "type_preset": "h3", "width": "fit-content", "alignment": "center" } },
+            "button": { "type": "button", "settings": { "label": "Shop now", "link": "shopify://collections/all", "style_class": "link" } }
           },
           "block_order": ["spacer", "text_1", "button"]
         },
@@ -1289,30 +1183,9 @@
             "padding-inline-end": 40
           },
           "blocks": {
-            "spacer": {
-              "type": "spacer",
-              "settings": {
-                "size": "pixel",
-                "pixel_size": 16
-              }
-            },
-            "text_1": {
-              "type": "text",
-              "settings": {
-                "text": "<h3>Bestsellers</h3>",
-                "type_preset": "h3",
-                "width": "fit-content",
-                "alignment": "center"
-              }
-            },
-            "button": {
-              "type": "button",
-              "settings": {
-                "label": "Shop now",
-                "link": "shopify://collections/all",
-                "style_class": "link"
-              }
-            }
+            "spacer": { "type": "spacer", "settings": { "size": "pixel", "pixel_size": 16 } },
+            "text_1": { "type": "text", "settings": { "text": "<h3>Bestsellers</h3>", "type_preset": "h3", "width": "fit-content", "alignment": "center" } },
+            "button": { "type": "button", "settings": { "label": "Shop now", "link": "shopify://collections/all", "style_class": "link" } }
           },
           "block_order": ["spacer", "text_1", "button"]
         }
@@ -1338,40 +1211,15 @@
       "blocks": {
         "image": {
           "type": "image",
-          "settings": {
-            "image": "",
-            "image_ratio": "square"
-          }
+          "settings": { "image": "", "image_ratio": "square" }
         },
         "group": {
           "type": "group",
-          "settings": {
-            "horizontal_alignment_flex_direction_column": "flex-start",
-            "width": "custom"
-          },
+          "settings": { "horizontal_alignment_flex_direction_column": "flex-start", "width": "custom" },
           "blocks": {
-            "heading": {
-              "type": "text",
-              "name": "t:names.heading",
-              "settings": {
-                "text": "<h2>Our signature product.</h2>",
-                "type_preset": "h3"
-              }
-            },
-            "text": {
-              "type": "text",
-              "settings": {
-                "text": "<p>Made with care and unconditionally loved by our customers, this signature bestseller exceeds all expectations.</p>",
-                "max_width": "narrow"
-              }
-            },
-            "button": {
-              "type": "button",
-              "settings": {
-                "label": "Shop now",
-                "link": "shopify://collections/all"
-              }
-            }
+            "heading": { "type": "text", "name": "t:names.heading", "settings": { "text": "<h2>Our signature product.</h2>", "type_preset": "h3" } },
+            "text": { "type": "text", "settings": { "text": "<p>Made with care and unconditionally loved by our customers, this signature bestseller exceeds all expectations.</p>", "max_width": "narrow" } },
+            "button": { "type": "button", "settings": { "label": "Shop now", "link": "shopify://collections/all" } }
           },
           "block_order": ["heading", "text", "button"]
         }
@@ -1414,48 +1262,8 @@
             "padding-inline-end": 0
           },
           "blocks": {
-            "heading": {
-              "type": "text",
-              "name": "Heading",
-              "settings": {
-                "text": "<h2>Intentional design</h2>",
-                "width": "100%",
-                "max_width": "normal",
-                "alignment": "center",
-                "type_preset": "h4",
-                "font": "var(--font-body--family)",
-                "font_size": "1rem",
-                "line_height": "normal",
-                "letter_spacing": "normal",
-                "case": "none",
-                "wrap": "pretty",
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              }
-            },
-            "text": {
-              "type": "text",
-              "name": "Description",
-              "settings": {
-                "text": "<p>We create with intention. Our products solve real problems with clean design and honest materials.</p>",
-                "width": "100%",
-                "max_width": "normal",
-                "alignment": "center",
-                "type_preset": "rte",
-                "font": "var(--font-body--family)",
-                "font_size": "1rem",
-                "line_height": "normal",
-                "letter_spacing": "normal",
-                "case": "none",
-                "wrap": "pretty",
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              }
-            }
+            "heading": { "type": "text", "name": "Heading", "settings": { "text": "<h2>Intentional design</h2>", "width": "100%", "max_width": "normal", "alignment": "center", "type_preset": "h4", "font": "var(--font-body--family)", "font_size": "1rem", "line_height": "normal", "letter_spacing": "normal", "case": "none", "wrap": "pretty", "padding-block-start": 0, "padding-block-end": 0, "padding-inline-start": 0, "padding-inline-end": 0 } },
+            "text": { "type": "text", "name": "Description", "settings": { "text": "<p>We create with intention. Our products solve real problems with clean design and honest materials.</p>", "width": "100%", "max_width": "normal", "alignment": "center", "type_preset": "rte", "font": "var(--font-body--family)", "font_size": "1rem", "line_height": "normal", "letter_spacing": "normal", "case": "none", "wrap": "pretty", "padding-block-start": 0, "padding-block-end": 0, "padding-inline-start": 0, "padding-inline-end": 0 } }
           },
           "block_order": ["heading", "text"]
         },
@@ -1491,48 +1299,8 @@
             "padding-inline-end": 0
           },
           "blocks": {
-            "heading": {
-              "type": "text",
-              "name": "Heading",
-              "settings": {
-                "text": "<h2>Quality first</h2>",
-                "width": "100%",
-                "max_width": "normal",
-                "alignment": "center",
-                "type_preset": "h4",
-                "font": "var(--font-body--family)",
-                "font_size": "1rem",
-                "line_height": "normal",
-                "letter_spacing": "normal",
-                "case": "none",
-                "wrap": "pretty",
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              }
-            },
-            "text": {
-              "type": "text",
-              "name": "Description",
-              "settings": {
-                "text": "<p>We obsess over the details and strive to deliver the best products at the best prices, every time.</p>",
-                "width": "100%",
-                "max_width": "normal",
-                "alignment": "center",
-                "type_preset": "rte",
-                "font": "var(--font-body--family)",
-                "font_size": "1rem",
-                "line_height": "normal",
-                "letter_spacing": "normal",
-                "case": "none",
-                "wrap": "pretty",
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              }
-            }
+            "heading": { "type": "text", "name": "Heading", "settings": { "text": "<h2>Quality first</h2>", "width": "100%", "max_width": "normal", "alignment": "center", "type_preset": "h4", "font": "var(--font-body--family)", "font_size": "1rem", "line_height": "normal", "letter_spacing": "normal", "case": "none", "wrap": "pretty", "padding-block-start": 0, "padding-block-end": 0, "padding-inline-start": 0, "padding-inline-end": 0 } },
+            "text": { "type": "text", "name": "Description", "settings": { "text": "<p>We obsess over the details and strive to deliver the best products at the best prices, every time.</p>", "width": "100%", "max_width": "normal", "alignment": "center", "type_preset": "rte", "font": "var(--font-body--family)", "font_size": "1rem", "line_height": "normal", "letter_spacing": "normal", "case": "none", "wrap": "pretty", "padding-block-start": 0, "padding-block-end": 0, "padding-inline-start": 0, "padding-inline-end": 0 } }
           },
           "block_order": ["heading", "text"]
         },
@@ -1568,48 +1336,8 @@
             "padding-inline-end": 0
           },
           "blocks": {
-            "heading": {
-              "type": "text",
-              "name": "Heading",
-              "settings": {
-                "text": "<h2>Customer care</h2>",
-                "width": "100%",
-                "max_width": "normal",
-                "alignment": "center",
-                "type_preset": "h4",
-                "font": "var(--font-body--family)",
-                "font_size": "1rem",
-                "line_height": "normal",
-                "letter_spacing": "normal",
-                "case": "none",
-                "wrap": "pretty",
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              }
-            },
-            "text": {
-              "type": "text",
-              "name": "Description",
-              "settings": {
-                "text": "<p>We're always on your side: keeping our loyal customers happy is our top priority and number one goal.</p>",
-                "width": "100%",
-                "max_width": "normal",
-                "alignment": "center",
-                "type_preset": "rte",
-                "font": "var(--font-body--family)",
-                "font_size": "1rem",
-                "line_height": "normal",
-                "letter_spacing": "normal",
-                "case": "none",
-                "wrap": "pretty",
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              }
-            }
+            "heading": { "type": "text", "name": "Heading", "settings": { "text": "<h2>Customer care</h2>", "width": "100%", "max_width": "normal", "alignment": "center", "type_preset": "h4", "font": "var(--font-body--family)", "font_size": "1rem", "line_height": "normal", "letter_spacing": "normal", "case": "none", "wrap": "pretty", "padding-block-start": 0, "padding-block-end": 0, "padding-inline-start": 0, "padding-inline-end": 0 } },
+            "text": { "type": "text", "name": "Description", "settings": { "text": "<p>We're always on your side: keeping our loyal customers happy is our top priority and number one goal.</p>", "width": "100%", "max_width": "normal", "alignment": "center", "type_preset": "rte", "font": "var(--font-body--family)", "font_size": "1rem", "line_height": "normal", "letter_spacing": "normal", "case": "none", "wrap": "pretty", "padding-block-start": 0, "padding-block-end": 0, "padding-inline-start": 0, "padding-inline-end": 0 } }
           },
           "block_order": ["heading", "text"]
         }
@@ -1641,20 +1369,8 @@
       "name": "t:names.large_logo",
       "category": "t:categories.banners",
       "blocks": {
-        "text": {
-          "type": "text",
-          "settings": {
-            "text": "<p>Made with care and unconditionally loved by our customers, this signature bestseller exceeds all expectations.</p>",
-            "max_width": "narrow"
-          }
-        },
-        "logo": {
-          "type": "logo",
-          "settings": {
-            "unit": "percent",
-            "percent_width": 100
-          }
-        }
+        "text": { "type": "text", "settings": { "text": "<p>Made with care and unconditionally loved by our customers, this signature bestseller exceeds all expectations.</p>", "max_width": "narrow" } },
+        "logo": { "type": "logo", "settings": { "unit": "percent", "percent_width": 100 } }
       },
       "block_order": ["text", "logo"],
       "settings": {
