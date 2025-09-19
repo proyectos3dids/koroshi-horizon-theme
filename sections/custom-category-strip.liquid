@@ -182,6 +182,14 @@
     });
   })();
 </script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var activeItem = document.querySelector('.item.is-active .link');
+  if (activeItem) {
+    activeItem.click(); // simula el clic en el elemento activo
+  }
+});
+</script>
 
 {% schema %}
 {
