@@ -222,15 +222,15 @@
             "button_mJDMHC": {
               "type": "button",
               "settings": {
-                "bold_text": false,
-                "show_icon": false,
+                "bold_text": true,
+                "show_icon": true,
                 "label": "Comprar ahora",
                 "link": "shopify://collections/all",
                 "open_in_new_tab": false,
                 "style_class": "button",
-                "width": "fit-content",
-                "custom_width": 100,
-                "width_mobile": "fit-content",
+                "width": "custom",
+                "custom_width": 30,
+                "width_mobile": "custom",
                 "custom_width_mobile": 100
               },
               "blocks": {}
@@ -323,15 +323,15 @@
             "button_q3ejA8": {
               "type": "button",
               "settings": {
-                "bold_text": false,
-                "show_icon": false,
+                "bold_text": true,
+                "show_icon": true,
                 "label": "Comprar ahora",
                 "link": "shopify://collections/all",
                 "open_in_new_tab": false,
                 "style_class": "button",
-                "width": "fit-content",
-                "custom_width": 100,
-                "width_mobile": "fit-content",
+                "width": "custom",
+                "custom_width": 30,
+                "width_mobile": "custom",
                 "custom_width_mobile": 100
               },
               "blocks": {}
