@@ -109,7 +109,7 @@
         "text_fh6YX3",
         "button_DcwYiJ"
       ],
-      "name": "Hero Mobile1",
+      "name": "Hero *Mobile1",
       "settings": {
         "media_type_1": "video",
         "image_1": "shopify://shop_images/2522VS05_000323_49573_banner_1.jpg",
@@ -241,7 +241,7 @@
         "text_tYTcFd",
         "button_TN9epf"
       ],
-      "name": "Hero Mobile2",
+      "name": "Hero *Mobile2",
       "settings": {
         "media_type_1": "image",
         "image_1": "shopify://shop_images/paula22223022.png",
@@ -372,7 +372,7 @@
         "text_CMTFrB",
         "button_t6m3Gh"
       ],
-      "name": "Hero Mobile3",
+      "name": "Hero *Mobile3",
       "settings": {
         "media_type_1": "image",
         "image_1": "shopify://shop_images/Frame_5_689f3c61-355d-47cc-9687-7f4ec3502e84.png",
@@ -612,7 +612,7 @@
         "group_Ax7jez",
         "group_TycAVr"
       ],
-      "name": "Dividir presentación Mobile",
+      "name": "Dividir presentación *Mobile",
       "settings": {
         "content_direction": "row",
         "vertical_on_mobile": true,
@@ -742,7 +742,7 @@
         "text_HYBYMK",
         "button_PanwmF"
       ],
-      "name": "Hero Destokp",
+      "name": "Hero *Destokp",
       "settings": {
         "media_type_1": "image",
         "image_1": "shopify://shop_images/2522VS05_000323_49573_banner_1.jpg",
