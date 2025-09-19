@@ -372,7 +372,7 @@
         "text_CMTFrB",
         "button_t6m3Gh"
       ],
-      "name": "Hero Mobile",
+      "name": "Hero Mobile3",
       "settings": {
         "media_type_1": "image",
         "image_1": "shopify://shop_images/Frame_5_689f3c61-355d-47cc-9687-7f4ec3502e84.png",
@@ -400,136 +400,6 @@
         "padding-block-start": 100,
         "padding-block-end": 48,
         "visibility": "mobile"
-      }
-    },
-    "hero_jVaWmY": {
-      "type": "hero",
-      "blocks": {
-        "logo_4AeNBU": {
-          "type": "logo",
-          "name": "t:names.logo",
-          "disabled": true,
-          "settings": {
-            "inverse": false,
-            "font": "accent",
-            "unit": "percent",
-            "percent_width": 50,
-            "pixel_height": 96,
-            "custom_mobile_size": true,
-            "unit_mobile": "pixel",
-            "percent_width_mobile": 100,
-            "pixel_height_mobile": 40,
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {}
-        },
-        "text_iXYWz6": {
-          "type": "text",
-          "name": "t:names.text",
-          "settings": {
-            "text": "<p><strong>NUEVA COLLECCIÓN</strong></p>",
-            "width": "100%",
-            "max_width": "narrow",
-            "alignment": "center",
-            "type_preset": "custom",
-            "font": "var(--font-body--family)",
-            "font_size": "2rem",
-            "line_height": "normal",
-            "letter_spacing": "normal",
-            "case": "none",
-            "wrap": "pretty",
-            "color": "var(--color-foreground)",
-            "background": false,
-            "background_color": "#00000026",
-            "corner_radius": 0,
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {}
-        },
-        "text_HYBYMK": {
-          "type": "text",
-          "name": "t:names.text",
-          "settings": {
-            "text": "<p>Ya disponible online y en tienda<br/><br/></p>",
-            "width": "100%",
-            "max_width": "normal",
-            "alignment": "center",
-            "type_preset": "custom",
-            "font": "var(--font-body--family)",
-            "font_size": "1rem",
-            "line_height": "normal",
-            "letter_spacing": "normal",
-            "case": "none",
-            "wrap": "pretty",
-            "color": "var(--color-foreground)",
-            "background": false,
-            "background_color": "#00000026",
-            "corner_radius": 0,
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {}
-        },
-        "button_PanwmF": {
-          "type": "button",
-          "name": "t:names.button",
-          "settings": {
-            "bold_text": true,
-            "show_icon": true,
-            "label": "Descúbrela",
-            "link": "shopify://collections/all",
-            "open_in_new_tab": false,
-            "style_class": "button",
-            "width": "custom",
-            "custom_width": 30,
-            "width_mobile": "custom",
-            "custom_width_mobile": 100
-          },
-          "blocks": {}
-        }
-      },
-      "block_order": [
-        "logo_4AeNBU",
-        "text_iXYWz6",
-        "text_HYBYMK",
-        "button_PanwmF"
-      ],
-      "name": "Hero Destokp",
-      "settings": {
-        "media_type_1": "image",
-        "image_1": "shopify://shop_images/2522VS05_000323_49573_banner_1.jpg",
-        "media_type_2": "image",
-        "link": "",
-        "open_in_new_tab": false,
-        "content_direction": "column",
-        "vertical_on_mobile": true,
-        "horizontal_alignment": "space-between",
-        "vertical_alignment": "center",
-        "align_baseline": true,
-        "horizontal_alignment_flex_direction_column": "center",
-        "vertical_alignment_flex_direction_column": "flex-end",
-        "gap": 20,
-        "section_width": "page-width",
-        "section_height": "custom",
-        "section_height_custom": 100,
-        "color_scheme": "scheme-6",
-        "toggle_overlay": true,
-        "overlay_color": "#00000014",
-        "overlay_style": "solid",
-        "gradient_direction": "to bottom",
-        "blurred_reflection": true,
-        "reflection_opacity": 0,
-        "padding-block-start": 100,
-        "padding-block-end": 48,
-        "visibility": "desktop"
       }
     },
     "section_wNWh4x": {
@@ -742,7 +612,7 @@
         "group_Ax7jez",
         "group_TycAVr"
       ],
-      "name": "Dividir presentación Móvil",
+      "name": "Dividir presentación Mobile",
       "settings": {
         "content_direction": "row",
         "vertical_on_mobile": true,
@@ -769,6 +639,136 @@
         "gradient_direction": "to top",
         "padding-block-start": 0,
         "padding-block-end": 0,
+        "visibility": "desktop"
+      }
+    },
+    "hero_jVaWmY": {
+      "type": "hero",
+      "blocks": {
+        "logo_4AeNBU": {
+          "type": "logo",
+          "name": "t:names.logo",
+          "disabled": true,
+          "settings": {
+            "inverse": false,
+            "font": "accent",
+            "unit": "percent",
+            "percent_width": 50,
+            "pixel_height": 96,
+            "custom_mobile_size": true,
+            "unit_mobile": "pixel",
+            "percent_width_mobile": 100,
+            "pixel_height_mobile": 40,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {}
+        },
+        "text_iXYWz6": {
+          "type": "text",
+          "name": "t:names.text",
+          "settings": {
+            "text": "<p><strong>NUEVA COLLECCIÓN</strong></p>",
+            "width": "100%",
+            "max_width": "narrow",
+            "alignment": "center",
+            "type_preset": "custom",
+            "font": "var(--font-body--family)",
+            "font_size": "2rem",
+            "line_height": "normal",
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "pretty",
+            "color": "var(--color-foreground)",
+            "background": false,
+            "background_color": "#00000026",
+            "corner_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {}
+        },
+        "text_HYBYMK": {
+          "type": "text",
+          "name": "t:names.text",
+          "settings": {
+            "text": "<p>Ya disponible online y en tienda<br/><br/></p>",
+            "width": "100%",
+            "max_width": "normal",
+            "alignment": "center",
+            "type_preset": "custom",
+            "font": "var(--font-body--family)",
+            "font_size": "1rem",
+            "line_height": "normal",
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "pretty",
+            "color": "var(--color-foreground)",
+            "background": false,
+            "background_color": "#00000026",
+            "corner_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {}
+        },
+        "button_PanwmF": {
+          "type": "button",
+          "name": "t:names.button",
+          "settings": {
+            "bold_text": true,
+            "show_icon": true,
+            "label": "Descúbrela",
+            "link": "shopify://collections/all",
+            "open_in_new_tab": false,
+            "style_class": "button",
+            "width": "custom",
+            "custom_width": 30,
+            "width_mobile": "custom",
+            "custom_width_mobile": 100
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "logo_4AeNBU",
+        "text_iXYWz6",
+        "text_HYBYMK",
+        "button_PanwmF"
+      ],
+      "name": "Hero Destokp",
+      "settings": {
+        "media_type_1": "image",
+        "image_1": "shopify://shop_images/2522VS05_000323_49573_banner_1.jpg",
+        "media_type_2": "image",
+        "link": "",
+        "open_in_new_tab": false,
+        "content_direction": "column",
+        "vertical_on_mobile": true,
+        "horizontal_alignment": "space-between",
+        "vertical_alignment": "center",
+        "align_baseline": true,
+        "horizontal_alignment_flex_direction_column": "center",
+        "vertical_alignment_flex_direction_column": "flex-end",
+        "gap": 20,
+        "section_width": "page-width",
+        "section_height": "custom",
+        "section_height_custom": 100,
+        "color_scheme": "scheme-6",
+        "toggle_overlay": true,
+        "overlay_color": "#00000014",
+        "overlay_style": "solid",
+        "gradient_direction": "to bottom",
+        "blurred_reflection": true,
+        "reflection_opacity": 0,
+        "padding-block-start": 100,
+        "padding-block-end": 48,
         "visibility": "desktop"
       }
     },
