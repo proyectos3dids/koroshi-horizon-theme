@@ -1072,6 +1072,7 @@
       },
       "name": "NEW IN Colección destacada: Cuadrícula",
       "settings": {
+        "unique_id": "new-in",
         "collection": "all",
         "layout_type": "grid",
         "carousel_on_mobile": false,
@@ -1327,7 +1328,8 @@
       },
       "name": "MUJER Colección destacada: Cuadrícula",
       "settings": {
-        "collection": "all",
+        "unique_id": "mujer",
+        "collection": "frontpage",
         "layout_type": "grid",
         "carousel_on_mobile": false,
         "max_products": 8,
