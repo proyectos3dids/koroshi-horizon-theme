@@ -1,10 +1,7 @@
 {% comment %}
   Tira categorías (inputs) — sin puntos, subrayado al hacer clic,
   y toggle de carruseles por ID (display none / show).
-  Cambios:
-  - Ocultado por defecto con CSS usando !important.
-  - Al cargar: hideAll() SIEMPRE, luego showOne() del activo por defecto si existe.
-  - En CSS de ocultación NO se usa | escape para no romper el selector del ID.
+  Fix: al mostrar, se usa !important y se respeta el display original.
 {% endcomment %}
 
 {% assign S = section.settings %}
@@ -71,9 +68,9 @@
 </style>
 
 {%- comment -%}
-  CSS para ocultar por defecto todos los carruseles indicados (sin '#').
-  Usamos !important por si el tema trae display:block o inline styles.
-  OJO: aquí NO usamos | escape para no romper el selector (#id).
+  CSS para ocultar por defecto los carruseles indicados (sin '#').
+  Usamos !important para ganar a estilos del tema.
+  Nota: no usamos | escape para no romper el selector (#id).
 {%- endcomment -%}
 <style id="catstrip-hide-ids-{{ section.id }}">
   {% if S.i1_target_id != blank %}#{{ S.i1_target_id | strip }}{display:none !important;} {% endif %}
@@ -175,15 +172,32 @@
       "{{ S.i5_target_id | escape }}"
     ].filter(function(id){ return id && id.trim().length > 0; });
 
+    // Guardamos el display original de cada target (para restaurarlo al mostrar)
+    var originalDisplays = {};
+    targets.forEach(function(id){
+      var el = document.getElementById(id);
+      if(!el) return;
+      var cs = window.getComputedStyle(el).display;
+      // si está 'none', asumimos 'block' como valor razonable
+      originalDisplays[id] = (cs && cs !== 'none') ? cs : 'block';
+    });
+
     function hideAll(){
       targets.forEach(function(id){
         var el = document.getElementById(id);
-        if(el){ el.style.display = 'none'; }
+        if(el){
+          // ocultamos con prioridad
+          el.style.setProperty('display', 'none', 'important');
+        }
       });
     }
     function showOne(id){
       var el = document.getElementById(id);
-      if(el){ el.style.display = ''; } // inline style > CSS con !important (muestra)
+      if(el){
+        var disp = originalDisplays[id] || 'block';
+        // mostramos con prioridad para ganar al CSS !important
+        el.style.setProperty('display', disp, 'important');
+      }
     }
     function clearActive(){
       items.forEach(function(li){ li.classList.remove('is-active'); });
