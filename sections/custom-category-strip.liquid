@@ -1,137 +1,126 @@
 {% comment %}
-  Custom Category Strip (no es menú)
-  - Bloques = ítems de la tira
-  - Cada bloque puede:
-      * tener texto y enlace
-      * estar resaltado (color de acento)
-      * ir subrayado (línea inferior)
-      * estar en negrita
-  - Controles globales: colores, tipografía, gap, padding, márgenes, alineación, subrayado
-  - Sin filtros dentro del bucle for (cumple preferencia del usuario)
+  Category Strip Simple (no menú real)
+  - 5 items fijos, cada uno por inputs de texto (label + url opcional).
+  - Controles por item: accent (color), underline, bold.
+  - Controles globales: tipografía, colores, spacing, alineación.
+  - Sin bucles y sin filtros dentro de bucles (cumple preferencia).
 {% endcomment %}
 
-{% assign _section = section.settings %}
+{% assign S = section.settings %}
 
 <style>
-  #category-strip-{{ section.id }}{
-    --strip-text: {{ _section.text_color }};
-    --strip-text-hover: {{ _section.text_hover_color }};
-    --strip-accent: {{ _section.accent_color }};
-    --strip-underline: {{ _section.underline_color }};
-    --strip-fsize: {{ _section.font_size | default: 18 }}px;
-    --strip-lspace: {{ _section.letter_spacing | default: 0 }}px;
-    --strip-weight: {{ _section.font_weight }};
-    --strip-gap-d: {{ _section.gap_desktop | default: 28 }}px;
-    --strip-gap-m: {{ _section.gap_mobile | default: 18 }}px;
-    --strip-pad-y: {{ _section.padding_y | default: 16 }}px;
-    --strip-pad-x: {{ _section.padding_x | default: 0 }}px;
-    --strip-mt: {{ _section.margin_top | default: 0 }}px;
-    --strip-mb: {{ _section.margin_bottom | default: 0 }}px;
-    --strip-uline-thick: {{ _section.underline_thickness | default: 2 }}px;
-    --strip-uline-offset: {{ _section.underline_offset | default: 3 }}px;
-    --strip-maxw: {% if _section.max_width != blank %}{{ _section.max_width }}{% else %}100%{% endif %};
+  #catstrip-{{ section.id }}{
+    --text: {{ S.text_color }};
+    --hover: {{ S.text_hover_color }};
+    --accent: {{ S.accent_color }};
+    --uline: {{ S.underline_color }};
+    --fsize: {{ S.font_size | default: 18 }}px;
+    --lspace: {{ S.letter_spacing | default: 0 }}px;
+    --wbase: {{ S.font_weight }};
+    --gap-d: {{ S.gap_desktop | default: 28 }}px;
+    --gap-m: {{ S.gap_mobile | default: 18 }}px;
+    --py: {{ S.padding_y | default: 16 }}px;
+    --px: {{ S.padding_x | default: 0 }}px;
+    --mt: {{ S.margin_top | default: 0 }}px;
+    --mb: {{ S.margin_bottom | default: 0 }}px;
+    --uline-thick: {{ S.underline_thickness | default: 2 }}px;
+    --uline-off: {{ S.underline_offset | default: 3 }}px;
+    --maxw: {% if S.max_width != blank %}{{ S.max_width }}{% else %}100%{% endif %};
   }
+  #catstrip-{{ section.id }}{ margin-top:var(--mt); margin-bottom:var(--mb); }
+  #catstrip-{{ section.id }} .wrap{ max-width:var(--maxw); margin:0 auto; padding:var(--py) var(--px); }
+  #catstrip-{{ section.id }} .list{
+    display:flex; align-items:center; gap:var(--gap-m);
+    justify-content:{% case S.align %}{% when 'center' %}center{% when 'right' %}flex-end{% else %}flex-start{% endcase %};
+    flex-wrap:{% if S.wrap_mobile %}wrap{% else %}nowrap{% endif %};
+  }
+  @media (min-width:768px){ #catstrip-{{ section.id }} .list{ gap:var(--gap-d); flex-wrap:nowrap; } }
 
-  #category-strip-{{ section.id }}{
-    margin-top: var(--strip-mt);
-    margin-bottom: var(--strip-mb);
+  #catstrip-{{ section.id }} .item{
+    position:relative; font-size:var(--fsize); letter-spacing:var(--lspace);
+    font-weight:var(--wbase); line-height:1.1;
+    text-transform:{% if S.uppercase %}uppercase{% else %}none{% endif %};
   }
-  #category-strip-{{ section.id }} .strip-container{
-    max-width: var(--strip-maxw);
-    margin: 0 auto;
-    padding: var(--strip-pad-y) var(--strip-pad-x);
+  #catstrip-{{ section.id }} .link{
+    display:inline-block; color:var(--text); text-decoration:none;
+    padding-bottom:calc(var(--uline-off) + var(--uline-thick));
+    transition:color .2s ease, opacity .2s ease, transform .2s ease;
   }
-  #category-strip-{{ section.id }} .strip-list{
-    display: flex;
-    flex-wrap: {% if _section.wrap_mobile %}wrap{% else %}nowrap{% endif %};
-    align-items: center;
-    gap: var(--strip-gap-m);
-    justify-content:
-      {% case _section.align %}
-        {% when 'center' %}center
-        {% when 'right' %}flex-end
-        {% else %}flex-start
-      {% endcase %};
+  #catstrip-{{ section.id }} .link:hover{ color:var(--hover); }
+  #catstrip-{{ section.id }} .item[data-accent="true"] .link{ color:var(--accent); {% if S.accent_bold %}font-weight:700;{% endif %} }
+  #catstrip-{{ section.id }} .item[data-underline="true"] .link::after{
+    content:""; position:absolute; left:0; right:0; bottom:var(--uline-off);
+    height:var(--uline-thick); background:var(--uline);
   }
-  @media (min-width: 768px){
-    #category-strip-{{ section.id }} .strip-list{
-      gap: var(--strip-gap-d);
-      flex-wrap: nowrap;
-    }
-  }
-
-  #category-strip-{{ section.id }} .strip-item{
-    position: relative;
-    font-size: var(--strip-fsize);
-    letter-spacing: var(--strip-lspace);
-    font-weight: var(--strip-weight);
-    line-height: 1.1;
-    text-transform: {% if _section.uppercase %}uppercase{% else %}none{% endif %};
-    box-shadow: none;
-  }
-
-  #category-strip-{{ section.id }} .strip-link{
-    display: inline-block;
-    color: var(--strip-text);
-    text-decoration: none;
-    padding-bottom: calc(var(--strip-uline-offset) + var(--strip-uline-thick));
-    transition: color .2s ease, opacity .2s ease, transform .2s ease;
-  }
-  #category-strip-{{ section.id }} .strip-link:hover{
-    color: var(--strip-text-hover);
-  }
-
-  /* Estado: resaltado (color de acento) */
-  #category-strip-{{ section.id }} .strip-item[data-accent="true"] .strip-link{
-    color: var(--strip-accent);
-    font-weight: {% if _section.accent_bold %}700{% else %}inherit{% endif %};
-  }
-
-  /* Estado: subrayado */
-  #category-strip-{{ section.id }} .strip-item[data-underline="true"] .strip-link::after{
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: var(--strip-uline-offset);
-    height: var(--strip-uline-thick);
-    background: var(--strip-underline);
-  }
-
-  /* Estado: negrita por bloque */
-  #category-strip-{{ section.id }} .strip-item[data-strong="true"] .strip-link{
-    font-weight: 700;
-  }
-
-  /* Accesibilidad: enfoque teclado */
-  #category-strip-{{ section.id }} .strip-link:focus{
-    outline: 2px solid var(--strip-accent);
-    outline-offset: 2px;
-  }
+  #catstrip-{{ section.id }} .item[data-strong="true"] .link{ font-weight:700; }
+  #catstrip-{{ section.id }} .link:focus{ outline:2px solid var(--accent); outline-offset:2px; }
 </style>
 
-<section id="category-strip-{{ section.id }}" class="category-strip 3didsprime-strip">
-  <div class="strip-container">
-    <nav aria-label="{{ _section.aria_label | default: 'Categorías destacadas' }}">
-      <ul class="strip-list" role="list">
-        {% for block in section.blocks %}
-          {% assign b = block.settings %}
-          <li class="strip-item"
-              data-accent="{% if b.is_accent %}true{% else %}false{% endif %}"
-              data-underline="{% if b.is_underline %}true{% else %}false{% endif %}"
-              data-strong="{% if b.is_bold %}true{% else %}false{% endif %}"
-              {{ block.shopify_attributes }}>
-            {% if b.url != blank %}
-              <a class="strip-link" href="{{ b.url }}" aria-label="{{ b.label }}">
-                {{ b.label }}
-              </a>
-            {% else %}
-              <span class="strip-link" aria-label="{{ b.label }}" role="text">
-                {{ b.label }}
-              </span>
-            {% endif %}
-          </li>
-        {% endfor %}
+<section id="catstrip-{{ section.id }}" class="category-strip-simple 3didsprime-strip">
+  <div class="wrap">
+    <nav aria-label="{{ S.aria_label | default: 'Categorías' }}">
+      <ul class="list" role="list">
+
+        {%- comment -%} ITEM 1 {%- endcomment -%}
+        <li class="item"
+            data-accent="{% if S.i1_accent %}true{% else %}false{% endif %}"
+            data-underline="{% if S.i1_under %}true{% else %}false{% endif %}"
+            data-strong="{% if S.i1_bold %}true{% else %}false{% endif %}">
+          {%- if S.i1_url != blank -%}
+            <a class="link" href="{{ S.i1_url }}" aria-label="{{ S.i1_label }}">{{ S.i1_label }}</a>
+          {%- else -%}
+            <span class="link" role="text" aria-label="{{ S.i1_label }}">{{ S.i1_label }}</span>
+          {%- endif -%}
+        </li>
+
+        {%- comment -%} ITEM 2 {%- endcomment -%}
+        <li class="item"
+            data-accent="{% if S.i2_accent %}true{% else %}false{% endif %}"
+            data-underline="{% if S.i2_under %}true{% else %}false{% endif %}"
+            data-strong="{% if S.i2_bold %}true{% else %}false{% endif %}">
+          {%- if S.i2_url != blank -%}
+            <a class="link" href="{{ S.i2_url }}" aria-label="{{ S.i2_label }}">{{ S.i2_label }}</a>
+          {%- else -%}
+            <span class="link" role="text" aria-label="{{ S.i2_label }}">{{ S.i2_label }}</span>
+          {%- endif -%}
+        </li>
+
+        {%- comment -%} ITEM 3 {%- endcomment -%}
+        <li class="item"
+            data-accent="{% if S.i3_accent %}true{% else %}false{% endif %}"
+            data-underline="{% if S.i3_under %}true{% else %}false{% endif %}"
+            data-strong="{% if S.i3_bold %}true{% else %}false{% endif %}">
+          {%- if S.i3_url != blank -%}
+            <a class="link" href="{{ S.i3_url }}" aria-label="{{ S.i3_label }}">{{ S.i3_label }}</a>
+          {%- else -%}
+            <span class="link" role="text" aria-label="{{ S.i3_label }}">{{ S.i3_label }}</span>
+          {%- endif -%}
+        </li>
+
+        {%- comment -%} ITEM 4 {%- endcomment -%}
+        <li class="item"
+            data-accent="{% if S.i4_accent %}true{% else %}false{% endif %}"
+            data-underline="{% if S.i4_under %}true{% else %}false{% endif %}"
+            data-strong="{% if S.i4_bold %}true{% else %}false{% endif %}">
+          {%- if S.i4_url != blank -%}
+            <a class="link" href="{{ S.i4_url }}" aria-label="{{ S.i4_label }}">{{ S.i4_label }}</a>
+          {%- else -%}
+            <span class="link" role="text" aria-label="{{ S.i4_label }}">{{ S.i4_label }}</span>
+          {%- endif -%}
+        </li>
+
+        {%- comment -%} ITEM 5 {%- endcomment -%}
+        <li class="item"
+            data-accent="{% if S.i5_accent %}true{% else %}false{% endif %}"
+            data-underline="{% if S.i5_under %}true{% else %}false{% endif %}"
+            data-strong="{% if S.i5_bold %}true{% else %}false{% endif %}">
+          {%- if S.i5_url != blank -%}
+            <a class="link" href="{{ S.i5_url }}" aria-label="{{ S.i5_label }}">{{ S.i5_label }}</a>
+          {%- else -%}
+            <span class="link" role="text" aria-label="{{ S.i5_label }}">{{ S.i5_label }}</span>
+          {%- endif -%}
+        </li>
+
       </ul>
     </nav>
   </div>
@@ -140,102 +129,33 @@
 {% schema %}
 {
   "name": "Custom-category-strip",
-  "class": "category-strip-section",
+  "class": "category-strip-simple",
   "settings": [
     { "type": "header", "content": "Diseño" },
-    {
-      "type": "select",
-      "id": "align",
-      "label": "Alineación",
-      "default": "left",
-      "options": [
-        { "value": "left", "label": "Izquierda" },
-        { "value": "center", "label": "Centrada" },
-        { "value": "right", "label": "Derecha" }
-      ]
-    },
-    {
-      "type": "text",
-      "id": "max_width",
-      "label": "Anchura máxima (ej. 1200px o 100%)",
-      "default": "1200px"
-    },
-    {
-      "type": "range",
-      "id": "gap_desktop",
-      "label": "Separación entre items (desktop, px)",
-      "min": 0, "max": 80, "step": 1, "default": 28
-    },
-    {
-      "type": "range",
-      "id": "gap_mobile",
-      "label": "Separación entre items (móvil, px)",
-      "min": 0, "max": 60, "step": 1, "default": 18
-    },
-    {
-      "type": "checkbox",
-      "id": "wrap_mobile",
-      "label": "Permitir salto de línea en móvil",
-      "default": true
-    },
+    { "type": "select", "id": "align", "label": "Alineación", "default": "left",
+      "options":[{"value":"left","label":"Izquierda"},{"value":"center","label":"Centrada"},{"value":"right","label":"Derecha"}] },
+    { "type": "text", "id": "max_width", "label": "Anchura máxima (ej. 1200px o 100%)", "default": "1200px" },
+    { "type": "range", "id": "gap_desktop", "label": "Separación (desktop, px)", "min": 0, "max": 80, "step": 1, "default": 28 },
+    { "type": "range", "id": "gap_mobile", "label": "Separación (móvil, px)", "min": 0, "max": 60, "step": 1, "default": 18 },
+    { "type": "checkbox", "id": "wrap_mobile", "label": "Permitir salto de línea en móvil", "default": true },
 
     { "type": "header", "content": "Tipografía" },
-    {
-      "type": "range",
-      "id": "font_size",
-      "label": "Tamaño de letra (px)",
-      "min": 10, "max": 48, "step": 1, "default": 18
-    },
-    {
-      "type": "select",
-      "id": "font_weight",
-      "label": "Peso de fuente base",
-      "default": "600",
-      "options": [
-        { "value": "400", "label": "Regular (400)" },
-        { "value": "500", "label": "Medium (500)" },
-        { "value": "600", "label": "Semibold (600)" },
-        { "value": "700", "label": "Bold (700)" }
-      ]
-    },
-    {
-      "type": "range",
-      "id": "letter_spacing",
-      "label": "Espaciado de letras (px)",
-      "min": -1, "max": 5, "step": 0.1, "default": 0
-    },
-    {
-      "type": "checkbox",
-      "id": "uppercase",
-      "label": "Mayúsculas",
-      "default": true
-    },
+    { "type": "range", "id": "font_size", "label": "Tamaño (px)", "min": 10, "max": 48, "step": 1, "default": 18 },
+    { "type": "select", "id": "font_weight", "label": "Peso base", "default": "600",
+      "options":[{"value":"400","label":"400"},{"value":"500","label":"500"},{"value":"600","label":"600"},{"value":"700","label":"700"}] },
+    { "type": "range", "id": "letter_spacing", "label": "Espaciado letras (px)", "min": -1, "max": 5, "step": 0.1, "default": 0 },
+    { "type": "checkbox", "id": "uppercase", "label": "Mayúsculas", "default": true },
 
     { "type": "header", "content": "Colores" },
-    { "type": "color", "id": "text_color", "label": "Color de texto", "default": "#111111" },
-    { "type": "color", "id": "text_hover_color", "label": "Color texto hover", "default": "#111111" },
-    { "type": "color", "id": "accent_color", "label": "Color de acento (resaltado)", "default": "#F8C02E" },
-    { "type": "color", "id": "underline_color", "label": "Color de subrayado", "default": "#111111" },
-    {
-      "type": "checkbox",
-      "id": "accent_bold",
-      "label": "Resaltados en negrita",
-      "default": false
-    },
+    { "type": "color", "id": "text_color", "label": "Texto", "default": "#111111" },
+    { "type": "color", "id": "text_hover_color", "label": "Texto hover", "default": "#111111" },
+    { "type": "color", "id": "accent_color", "label": "Acento (resaltado)", "default": "#F8C02E" },
+    { "type": "color", "id": "underline_color", "label": "Subrayado", "default": "#111111" },
+    { "type": "checkbox", "id": "accent_bold", "label": "Resaltados en negrita", "default": false },
 
     { "type": "header", "content": "Subrayado" },
-    {
-      "type": "range",
-      "id": "underline_thickness",
-      "label": "Grosor del subrayado (px)",
-      "min": 1, "max": 8, "step": 1, "default": 2
-    },
-    {
-      "type": "range",
-      "id": "underline_offset",
-      "label": "Separación inferior (px)",
-      "min": 0, "max": 12, "step": 1, "default": 3
-    },
+    { "type": "range", "id": "underline_thickness", "label": "Grosor (px)", "min": 1, "max": 8, "step": 1, "default": 2 },
+    { "type": "range", "id": "underline_offset", "label": "Separación inferior (px)", "min": 0, "max": 12, "step": 1, "default": 3 },
 
     { "type": "header", "content": "Espaciados" },
     { "type": "range", "id": "padding_y", "label": "Padding vertical (px)", "min": 0, "max": 60, "step": 1, "default": 16 },
@@ -244,39 +164,45 @@
     { "type": "range", "id": "margin_bottom", "label": "Margen inferior (px)", "min": 0, "max": 120, "step": 2, "default": 0 },
 
     { "type": "header", "content": "Accesibilidad" },
-    {
-      "type": "text",
-      "id": "aria_label",
-      "label": "Etiqueta ARIA del nav",
-      "default": "Categorías destacadas"
-    }
-  ],
-  "blocks": [
-    {
-      "type": "item",
-      "name": "Ítem",
-      "limit": 8,
-      "settings": [
-        { "type": "text", "id": "label", "label": "Texto", "default": "Etiqueta" },
-        { "type": "url", "id": "url", "label": "Enlace (opcional)" },
-        { "type": "checkbox", "id": "is_accent", "label": "Resaltar con color de acento", "default": false },
-        { "type": "checkbox", "id": "is_underline", "label": "Mostrar subrayado", "default": false },
-        { "type": "checkbox", "id": "is_bold", "label": "Negrita", "default": false }
-      ]
-    }
+    { "type": "text", "id": "aria_label", "label": "Etiqueta ARIA del nav", "default": "Categorías" },
+
+    { "type": "header", "content": "Item 1" },
+    { "type": "text", "id": "i1_label", "label": "Texto", "default": "NEW IN" },
+    { "type": "url", "id": "i1_url", "label": "Enlace (opcional)" },
+    { "type": "checkbox", "id": "i1_accent", "label": "Resaltar con acento", "default": true },
+    { "type": "checkbox", "id": "i1_under", "label": "Subrayado", "default": false },
+    { "type": "checkbox", "id": "i1_bold", "label": "Negrita", "default": false },
+
+    { "type": "header", "content": "Item 2" },
+    { "type": "text", "id": "i2_label", "label": "Texto", "default": "MUJER" },
+    { "type": "url", "id": "i2_url", "label": "Enlace (opcional)" },
+    { "type": "checkbox", "id": "i2_accent", "label": "Resaltar con acento", "default": false },
+    { "type": "checkbox", "id": "i2_under", "label": "Subrayado", "default": true },
+    { "type": "checkbox", "id": "i2_bold", "label": "Negrita", "default": true },
+
+    { "type": "header", "content": "Item 3" },
+    { "type": "text", "id": "i3_label", "label": "Texto", "default": "HOMBRE" },
+    { "type": "url", "id": "i3_url", "label": "Enlace (opcional)" },
+    { "type": "checkbox", "id": "i3_accent", "label": "Resaltar con acento", "default": false },
+    { "type": "checkbox", "id": "i3_under", "label": "Subrayado", "default": false },
+    { "type": "checkbox", "id": "i3_bold", "label": "Negrita", "default": true },
+
+    { "type": "header", "content": "Item 4" },
+    { "type": "text", "id": "i4_label", "label": "Texto", "default": "KIDS" },
+    { "type": "url", "id": "i4_url", "label": "Enlace (opcional)" },
+    { "type": "checkbox", "id": "i4_accent", "label": "Resaltar con acento", "default": false },
+    { "type": "checkbox", "id": "i4_under", "label": "Subrayado", "default": false },
+    { "type": "checkbox", "id": "i4_bold", "label": "Negrita", "default": true },
+
+    { "type": "header", "content": "Item 5" },
+    { "type": "text", "id": "i5_label", "label": "Texto", "default": "REBAJAS" },
+    { "type": "url", "id": "i5_url", "label": "Enlace (opcional)" },
+    { "type": "checkbox", "id": "i5_accent", "label": "Resaltar con acento", "default": false },
+    { "type": "checkbox", "id": "i5_under", "label": "Subrayado", "default": false },
+    { "type": "checkbox", "id": "i5_bold", "label": "Negrita", "default": true }
   ],
   "presets": [
-    {
-      "name": "Custom-category-strip",
-      "category": "Texto",
-      "blocks": [
-        { "type": "item", "settings": { "label": "NEW IN", "is_accent": true, "is_underline": false, "is_bold": false } },
-        { "type": "item", "settings": { "label": "MUJER", "is_accent": false, "is_underline": true, "is_bold": true } },
-        { "type": "item", "settings": { "label": "HOMBRE", "is_accent": false, "is_underline": false, "is_bold": true } },
-        { "type": "item", "settings": { "label": "KIDS", "is_accent": false, "is_underline": false, "is_bold": true } },
-        { "type": "item", "settings": { "label": "REBAJAS", "is_accent": false, "is_underline": false, "is_bold": true } }
-      ]
-    }
+    { "name": "Custom-category-strip", "category": "Texto" }
   ]
 }
 {% endschema %}
