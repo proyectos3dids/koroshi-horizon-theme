@@ -784,6 +784,92 @@
         "visibility": "desktop"
       }
     },
+    "custom_category_strip_wb7zjf": {
+      "type": "custom-category-strip",
+      "blocks": {
+        "item_hV4mQ4": {
+          "type": "item",
+          "settings": {
+            "label": "NEW IN",
+            "url": "",
+            "is_accent": true,
+            "is_underline": false,
+            "is_bold": false
+          }
+        },
+        "item_nELdzL": {
+          "type": "item",
+          "settings": {
+            "label": "MUJER",
+            "url": "",
+            "is_accent": false,
+            "is_underline": true,
+            "is_bold": true
+          }
+        },
+        "item_DUpTPb": {
+          "type": "item",
+          "settings": {
+            "label": "HOMBRE",
+            "url": "",
+            "is_accent": false,
+            "is_underline": false,
+            "is_bold": true
+          }
+        },
+        "item_PkAnPd": {
+          "type": "item",
+          "settings": {
+            "label": "KIDS",
+            "url": "",
+            "is_accent": false,
+            "is_underline": false,
+            "is_bold": true
+          }
+        },
+        "item_HPfK4M": {
+          "type": "item",
+          "settings": {
+            "label": "REBAJAS",
+            "url": "",
+            "is_accent": false,
+            "is_underline": false,
+            "is_bold": true
+          }
+        }
+      },
+      "block_order": [
+        "item_hV4mQ4",
+        "item_nELdzL",
+        "item_DUpTPb",
+        "item_PkAnPd",
+        "item_HPfK4M"
+      ],
+      "name": "Custom-category-strip",
+      "settings": {
+        "align": "left",
+        "max_width": "1200px",
+        "gap_desktop": 28,
+        "gap_mobile": 18,
+        "wrap_mobile": true,
+        "font_size": 18,
+        "font_weight": "600",
+        "letter_spacing": 0,
+        "uppercase": true,
+        "text_color": "#111111",
+        "text_hover_color": "#111111",
+        "accent_color": "#F8C02E",
+        "underline_color": "#111111",
+        "accent_bold": false,
+        "underline_thickness": 2,
+        "underline_offset": 3,
+        "padding_y": 16,
+        "padding_x": 0,
+        "margin_top": 0,
+        "margin_bottom": 0,
+        "aria_label": "Categorías destacadas"
+      }
+    },
     "product_list_qU3bEB": {
       "type": "product-list",
       "blocks": {
@@ -1301,6 +1387,7 @@
     "hero_t3kNFy",
     "hero_jVaWmY",
     "section_wNWh4x",
+    "custom_category_strip_wb7zjf",
     "product_list_qU3bEB",
     "product_list_ney9AR"
   ]
