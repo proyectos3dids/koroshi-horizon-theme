@@ -193,6 +193,7 @@
         "text_tYTcFd": {
           "type": "text",
           "name": "t:names.text",
+          "disabled": true,
           "settings": {
             "text": "<p>Ya disponible online y en tienda<br/><br/></p>",
             "width": "100%",
@@ -222,9 +223,9 @@
           "settings": {
             "bold_text": true,
             "show_icon": true,
-            "label": "Descúbrela",
+            "label": "Ver colección",
             "link": "shopify://collections/all",
-            "open_in_new_tab": false,
+            "open_in_new_tab": true,
             "style_class": "button",
             "width": "custom",
             "custom_width": 30,
@@ -298,7 +299,7 @@
           "type": "text",
           "name": "t:names.text",
           "settings": {
-            "text": "<p><strong>NUEVA COLLECCIÓN</strong></p>",
+            "text": "<p><strong>BOLSOS</strong></p>",
             "width": "100%",
             "max_width": "narrow",
             "alignment": "center",
@@ -323,6 +324,7 @@
         "text_CMTFrB": {
           "type": "text",
           "name": "t:names.text",
+          "disabled": true,
           "settings": {
             "text": "<p>Ya disponible online y en tienda<br/><br/></p>",
             "width": "100%",
@@ -352,7 +354,7 @@
           "settings": {
             "bold_text": true,
             "show_icon": true,
-            "label": "Descúbrela",
+            "label": "Ver colección",
             "link": "shopify://collections/all",
             "open_in_new_tab": false,
             "style_class": "button",
