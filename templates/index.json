@@ -63,7 +63,7 @@
           "type": "text",
           "name": "t:names.text",
           "settings": {
-            "text": "<p>Ya disponible online y en tienda<br/><br/></p>",
+            "text": "<p>Ya disponible online y en tienda</p>",
             "width": "100%",
             "max_width": "normal",
             "alignment": "center",
