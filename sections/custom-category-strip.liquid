@@ -1,9 +1,5 @@
 {% comment %}
-  Category Strip Simple (no menú real)
-  - 5 items fijos, cada uno por inputs de texto (label + url opcional).
-  - Controles por item: accent (color), underline, bold.
-  - Controles globales: tipografía, colores, spacing, alineación.
-  - Sin bucles y sin filtros dentro de bucles (cumple preferencia).
+  Tira categorías (inputs) — sin puntos y subrayado al hacer clic
 {% endcomment %}
 
 {% assign S = section.settings %}
@@ -33,6 +29,7 @@
     display:flex; align-items:center; gap:var(--gap-m);
     justify-content:{% case S.align %}{% when 'center' %}center{% when 'right' %}flex-end{% else %}flex-start{% endcase %};
     flex-wrap:{% if S.wrap_mobile %}wrap{% else %}nowrap{% endif %};
+    list-style:none; margin:0; padding:0;       /* <- sin puntos */
   }
   @media (min-width:768px){ #catstrip-{{ section.id }} .list{ gap:var(--gap-d); flex-wrap:nowrap; } }
 
@@ -47,12 +44,23 @@
     transition:color .2s ease, opacity .2s ease, transform .2s ease;
   }
   #catstrip-{{ section.id }} .link:hover{ color:var(--hover); }
-  #catstrip-{{ section.id }} .item[data-accent="true"] .link{ color:var(--accent); {% if S.accent_bold %}font-weight:700;{% endif %} }
-  #catstrip-{{ section.id }} .item[data-underline="true"] .link::after{
+
+  /* Resaltado por color */
+  #catstrip-{{ section.id }} .item[data-accent="true"] .link{
+    color:var(--accent); {% if S.accent_bold %}font-weight:700;{% endif %}
+  }
+
+  /* Subrayado por ajustes o por clic (is-active) */
+  #catstrip-{{ section.id }} .item[data-underline="true"] .link::after,
+  #catstrip-{{ section.id }} .item.is-active .link::after{
     content:""; position:absolute; left:0; right:0; bottom:var(--uline-off);
     height:var(--uline-thick); background:var(--uline);
   }
+
+  /* Negrita por ítem */
   #catstrip-{{ section.id }} .item[data-strong="true"] .link{ font-weight:700; }
+
+  /* Enfoque accesible */
   #catstrip-{{ section.id }} .link:focus{ outline:2px solid var(--accent); outline-offset:2px; }
 </style>
 
@@ -60,75 +68,94 @@
   <div class="wrap">
     <nav aria-label="{{ S.aria_label | default: 'Categorías' }}">
       <ul class="list" role="list">
-
-        {%- comment -%} ITEM 1 {%- endcomment -%}
+        <!-- ITEM 1 -->
         <li class="item"
             data-accent="{% if S.i1_accent %}true{% else %}false{% endif %}"
             data-underline="{% if S.i1_under %}true{% else %}false{% endif %}"
             data-strong="{% if S.i1_bold %}true{% else %}false{% endif %}">
-          {%- if S.i1_url != blank -%}
+          {% if S.i1_url != blank %}
             <a class="link" href="{{ S.i1_url }}" aria-label="{{ S.i1_label }}">{{ S.i1_label }}</a>
-          {%- else -%}
+          {% else %}
             <span class="link" role="text" aria-label="{{ S.i1_label }}">{{ S.i1_label }}</span>
-          {%- endif -%}
+          {% endif %}
         </li>
 
-        {%- comment -%} ITEM 2 {%- endcomment -%}
+        <!-- ITEM 2 -->
         <li class="item"
             data-accent="{% if S.i2_accent %}true{% else %}false{% endif %}"
             data-underline="{% if S.i2_under %}true{% else %}false{% endif %}"
             data-strong="{% if S.i2_bold %}true{% else %}false{% endif %}">
-          {%- if S.i2_url != blank -%}
+          {% if S.i2_url != blank %}
             <a class="link" href="{{ S.i2_url }}" aria-label="{{ S.i2_label }}">{{ S.i2_label }}</a>
-          {%- else -%}
+          {% else %}
             <span class="link" role="text" aria-label="{{ S.i2_label }}">{{ S.i2_label }}</span>
-          {%- endif -%}
+          {% endif %}
         </li>
 
-        {%- comment -%} ITEM 3 {%- endcomment -%}
+        <!-- ITEM 3 -->
         <li class="item"
             data-accent="{% if S.i3_accent %}true{% else %}false{% endif %}"
             data-underline="{% if S.i3_under %}true{% else %}false{% endif %}"
             data-strong="{% if S.i3_bold %}true{% else %}false{% endif %}">
-          {%- if S.i3_url != blank -%}
+          {% if S.i3_url != blank %}
             <a class="link" href="{{ S.i3_url }}" aria-label="{{ S.i3_label }}">{{ S.i3_label }}</a>
-          {%- else -%}
+          {% else %}
             <span class="link" role="text" aria-label="{{ S.i3_label }}">{{ S.i3_label }}</span>
-          {%- endif -%}
+          {% endif %}
         </li>
 
-        {%- comment -%} ITEM 4 {%- endcomment -%}
+        <!-- ITEM 4 -->
         <li class="item"
             data-accent="{% if S.i4_accent %}true{% else %}false{% endif %}"
             data-underline="{% if S.i4_under %}true{% else %}false{% endif %}"
             data-strong="{% if S.i4_bold %}true{% else %}false{% endif %}">
-          {%- if S.i4_url != blank -%}
+          {% if S.i4_url != blank %}
             <a class="link" href="{{ S.i4_url }}" aria-label="{{ S.i4_label }}">{{ S.i4_label }}</a>
-          {%- else -%}
+          {% else %}
             <span class="link" role="text" aria-label="{{ S.i4_label }}">{{ S.i4_label }}</span>
-          {%- endif -%}
+          {% endif %}
         </li>
 
-        {%- comment -%} ITEM 5 {%- endcomment -%}
+        <!-- ITEM 5 -->
         <li class="item"
             data-accent="{% if S.i5_accent %}true{% else %}false{% endif %}"
             data-underline="{% if S.i5_under %}true{% else %}false{% endif %}"
             data-strong="{% if S.i5_bold %}true{% else %}false{% endif %}">
-          {%- if S.i5_url != blank -%}
+          {% if S.i5_url != blank %}
             <a class="link" href="{{ S.i5_url }}" aria-label="{{ S.i5_label }}">{{ S.i5_label }}</a>
-          {%- else -%}
+          {% else %}
             <span class="link" role="text" aria-label="{{ S.i5_label }}">{{ S.i5_label }}</span>
-          {%- endif -%}
+          {% endif %}
         </li>
-
       </ul>
     </nav>
   </div>
 </section>
 
+<script>
+  (function(){
+    var root = document.getElementById('catstrip-{{ section.id }}');
+    if(!root) return;
+    var items = root.querySelectorAll('.item');
+    var links = root.querySelectorAll('.item .link');
+
+    function clearActive(){ items.forEach(function(li){ li.classList.remove('is-active'); }); }
+
+    // Subraya el ítem pinchado
+    links.forEach(function(a){
+      a.addEventListener('click', function(){
+        clearActive();
+        var li = a.closest('.item');
+        if(li){ li.classList.add('is-active'); }
+        // no prevenimos navegación: el efecto se ve y luego navega
+      });
+    });
+  })();
+</script>
+
 {% schema %}
 {
-  "name": "Custom-category-strip",
+  "name": "Tira categorías (simple)",
   "class": "category-strip-simple",
   "settings": [
     { "type": "header", "content": "Diseño" },
@@ -202,7 +229,7 @@
     { "type": "checkbox", "id": "i5_bold", "label": "Negrita", "default": true }
   ],
   "presets": [
-    { "name": "Custom-category-strip", "category": "Texto" }
+    { "name": "Tira de categorías (simple)", "category": "Texto" }
   ]
 }
 {% endschema %}
