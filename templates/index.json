@@ -729,7 +729,7 @@
               "settings": {
                 "bold_text": true,
                 "show_icon": true,
-                "label": "Comprar",
+                "label": "Comprar ahora",
                 "link": "shopify://collections/all",
                 "open_in_new_tab": false,
                 "style_class": "button",
