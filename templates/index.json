@@ -768,7 +768,8 @@
         "overlay_style": "solid",
         "gradient_direction": "to top",
         "padding-block-start": 0,
-        "padding-block-end": 0
+        "padding-block-end": 0,
+        "visibility": "desktop"
       }
     },
     "product_list_qU3bEB": {
