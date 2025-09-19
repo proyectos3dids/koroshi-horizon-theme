@@ -36,17 +36,34 @@
 </a>
 
 <style>
+  /* Mantener estilos de link */
   .link{ text-decoration:none; text-decoration-color:currentcolor; }
   .link:hover{ color:var(--color-primary-hover); text-decoration-color:transparent; }
 
+  /* CENTRADO DEL CONTENIDO (con o sin icono) */
+  .size-style{
+    display:inline-flex;          /* no rompe layout existente */
+    align-items:center;
+    justify-content:center;       /* centra texto + icono dentro del botón */
+    vertical-align:middle;
+    text-align:center;            /* fallback si el botón creciera a 100% */
+  }
+
   .is-bold{ font-weight:700; }
 
-  .has-icon{ display:inline-flex; align-items:center; gap:.5rem; }
+  /* Icono opcional */
+  .has-icon{ gap:.5rem; }         /* solo añade separación cuando hay icono */
+
   .has-icon .button__icon{
-    display:inline-block; width:1em; height:1em;
+    display:inline-block;
+    width:1em; height:1em;        /* mismo alto que el texto */
     background-image:var(--icon-url);
-    background-repeat:no-repeat; background-size:contain; background-position:center;
-    flex:0 0 auto;
+    background-repeat:no-repeat;
+    background-size:contain;
+    background-position:center;
+    flex:0 0 1em;                 /* evita que desplace el texto */
   }
-  .has-icon:hover .button__icon{ background-image:var(--icon-url-hover); }
+  .has-icon:hover .button__icon{
+    background-image:var(--icon-url-hover);
+  }
 </style>

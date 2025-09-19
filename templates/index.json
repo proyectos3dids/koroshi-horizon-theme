@@ -89,6 +89,8 @@
           "type": "button",
           "name": "t:names.button",
           "settings": {
+            "bold_text": true,
+            "show_icon": true,
             "label": "Descúbrela",
             "link": "shopify://collections/all",
             "open_in_new_tab": false,
@@ -220,6 +222,8 @@
             "button_mJDMHC": {
               "type": "button",
               "settings": {
+                "bold_text": false,
+                "show_icon": false,
                 "label": "Comprar ahora",
                 "link": "shopify://collections/all",
                 "open_in_new_tab": false,
@@ -319,6 +323,8 @@
             "button_q3ejA8": {
               "type": "button",
               "settings": {
+                "bold_text": false,
+                "show_icon": false,
                 "label": "Comprar ahora",
                 "link": "shopify://collections/all",
                 "open_in_new_tab": false,
