@@ -4,7 +4,7 @@
   assign max_items = section.settings.max_products
 %}
 
-<div class="section-background color-{{ section.settings.color_scheme }}"></div>
+<div id="{{ section.settings.unique_id | escape }}" class="section-background color-{{ section.settings.color_scheme }}"></div>
 <div
   class="
     section
@@ -98,6 +98,14 @@
     "groups": ["header", "footer"]
   },
   "settings": [
+
+    {
+      "type": "text",
+      "id": "unique_id",
+      "label": "ID único para el contenedor",
+      "default": "new-in"
+    }
+    ,
     {
       "type": "collection",
       "id": "collection",
