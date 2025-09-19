@@ -1,5 +1,8 @@
 {% comment %}
-  CATEGORY STRIP — por defecto 2º activo y visible, resto ocultos.
+  CATEGORY STRIP — sin puntos, subrayado al hacer clic.
+  - Por defecto: Item 2 activo y mostrado, el resto ocultos.
+  - Oculto por defecto vía JS (display:none) y al seleccionar se quita el 'display' inline.
+  - Si un ítem tiene "Acento (resaltado)", el subrayado usa el color de acento.
 {% endcomment %}
 
 {% assign S = section.settings %}
@@ -46,24 +49,28 @@
   }
   #catstrip-{{ section.id }} .link:hover{ color:var(--hover); }
 
-  /* Color de acento en el texto */
+  /* Resaltado por color */
   #catstrip-{{ section.id }} .item[data-accent="true"] .link{
     color:var(--accent); {% if S.accent_bold %}font-weight:700;{% endif %}
   }
 
-  /* Subrayado cuando tiene ajuste o cuando está activo */
+  /* Subrayado base (ajuste o activo) */
   #catstrip-{{ section.id }} .item[data-underline="true"] .link::after,
   #catstrip-{{ section.id }} .item.is-active .link::after{
     content:""; position:absolute; left:0; right:0; bottom:var(--uline-off);
     height:var(--uline-thick); background:var(--uline);
   }
-  /* Si el ítem está en acento, el subrayado usa el color de acento */
+
+  /* Si el ítem tiene acento, el subrayado usa el color de acento */
   #catstrip-{{ section.id }} .item[data-accent="true"].is-active .link::after,
   #catstrip-{{ section.id }} .item[data-accent="true"][data-underline="true"] .link::after{
     background:var(--accent);
   }
 
+  /* Negrita por ítem */
   #catstrip-{{ section.id }} .item[data-strong="true"] .link{ font-weight:700; }
+
+  /* Enfoque accesible */
   #catstrip-{{ section.id }} .link:focus{ outline:2px solid var(--accent); outline-offset:2px; }
 </style>
 
@@ -71,6 +78,7 @@
   <div class="wrap">
     <nav aria-label="{{ S.aria_label | default: 'Categorías' }}">
       <ul class="list" role="list">
+
         <!-- ITEM 1 -->
         <li class="item{% if S.default_active == '1' %} is-active{% endif %}"
             data-target="{{ S.i1_target_id | escape }}"
@@ -83,6 +91,7 @@
             <span class="link" role="text" aria-label="{{ S.i1_label }}">{{ S.i1_label }}</span>
           {% endif %}
         </li>
+
         <!-- ITEM 2 -->
         <li class="item{% if S.default_active == '2' %} is-active{% endif %}"
             data-target="{{ S.i2_target_id | escape }}"
@@ -95,6 +104,7 @@
             <span class="link" role="text" aria-label="{{ S.i2_label }}">{{ S.i2_label }}</span>
           {% endif %}
         </li>
+
         <!-- ITEM 3 -->
         <li class="item{% if S.default_active == '3' %} is-active{% endif %}"
             data-target="{{ S.i3_target_id | escape }}"
@@ -107,6 +117,7 @@
             <span class="link" role="text" aria-label="{{ S.i3_label }}">{{ S.i3_label }}</span>
           {% endif %}
         </li>
+
         <!-- ITEM 4 -->
         <li class="item{% if S.default_active == '4' %} is-active{% endif %}"
             data-target="{{ S.i4_target_id | escape }}"
@@ -119,6 +130,7 @@
             <span class="link" role="text" aria-label="{{ S.i4_label }}">{{ S.i4_label }}</span>
           {% endif %}
         </li>
+
         <!-- ITEM 5 -->
         <li class="item{% if S.default_active == '5' %} is-active{% endif %}"
             data-target="{{ S.i5_target_id | escape }}"
@@ -131,6 +143,7 @@
             <span class="link" role="text" aria-label="{{ S.i5_label }}">{{ S.i5_label }}</span>
           {% endif %}
         </li>
+
       </ul>
     </nav>
   </div>
@@ -144,7 +157,7 @@
     var items = root.querySelectorAll('.item');
     var links = root.querySelectorAll('.item .link');
 
-    // IDs (sin '#'), ignorando vacíos
+    // IDs de carruseles (sin '#'), ignorando vacíos
     var targets = [
       "{{ S.i1_target_id | escape }}",
       "{{ S.i2_target_id | escape }}",
@@ -163,21 +176,24 @@
       var el = document.getElementById(id);
       if(el){ el.style.removeProperty('display'); }
     }
-    function clearActive(){ items.forEach(function(li){ li.classList.remove('is-active'); }); }
-
-    // Estado inicial: ocultar todos y activar ITEM 2
-    hideAll();
-    var defaultItem = items[1]; // índice 1 => Item 2
-    if(defaultItem){
-      var defId = defaultItem.getAttribute('data-target');
-      if(defId){ showOne(defId); }
-      defaultItem.classList.add('is-active');
+    function clearActive(){
+      items.forEach(function(li){ li.classList.remove('is-active'); });
     }
 
-    // Click
+    // Por defecto: ocultar todos y activar el Item 2 (si tiene ID)
+    hideAll();
+    var defaultIndex = 2; // forzamos Item 2 activo por defecto
+    var defaultItem = items[defaultIndex - 1];
+    if(defaultItem){
+      var defId = defaultItem.getAttribute('data-target');
+      if(defId){ showOne(defId); defaultItem.classList.add('is-active'); }
+    }
+
+    // Click: subraya y muestra carrusel objetivo (si existe)
     links.forEach(function(a){
       a.addEventListener('click', function(e){
-        var li = a.closest('.item'); if(!li) return;
+        var li = a.closest('.item');
+        if(!li) return;
         var targetId = li.getAttribute('data-target');
         if(targetId){
           e.preventDefault();
@@ -246,7 +262,7 @@
     { "type": "text", "id": "i1_label", "label": "Texto", "default": "NEW IN" },
     { "type": "url", "id": "i1_url", "label": "Enlace (opcional)" },
     { "type": "text", "id": "i1_target_id", "label": "ID del carrusel objetivo (sin #)"},
-    { "type": "checkbox", "id": "i1_accent", "label": "Resaltar con acento", "default": false },
+    { "type": "checkbox", "id": "i1_accent", "label": "Resaltar con acento", "default": true },
     { "type": "checkbox", "id": "i1_under", "label": "Subrayado", "default": false },
     { "type": "checkbox", "id": "i1_bold", "label": "Negrita", "default": false },
 
